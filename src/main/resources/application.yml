@@ -73,9 +73,10 @@ server:
     include-binding-errors: always
   compression:
     enabled: true
-  max-http-header-size: 48KB
+  max-http-header-size: 128KB
   tomcat:
     max-http-form-post-size: 10MB
+    max-http-request-header-size: 128KB
 
 # JWT Configuration
 jwt:
