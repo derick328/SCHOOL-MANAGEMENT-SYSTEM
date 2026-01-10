@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>School Management System - API Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 30px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        button {
+            background: #007bff;
+            color: white;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-top: 10px;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+        .response {
+            margin-top: 20px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 4px;
+            white-space: pre-wrap;
+            font-family: monospace;
+            font-size: 14px;
+        }
+        .success {
+            border-left: 4px solid #28a745;
+        }
+        .error {
+            border-left: 4px solid #dc3545;
+        }
+        .info {
+            background: #e7f3ff;
+            padding: 15px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+            border-left: 4px solid #007bff;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎓 School Management System - API Test</h1>
+        
+        <div class="info">
+            <strong>Default Credentials:</strong><br>
+            Admin: admin / Admin@123<br>
+            Teacher: teacher_demo / Teacher@123<br>
+            Student: student_demo / Student@123
+        </div>
+
+        <h2>Login Test</h2>
+        <div class="form-group">
+            <label>Username or Email:</label>
+            <input type="text" id="username" value="admin">
+        </div>
+        <div class="form-group">
+            <label>Password:</label>
+            <input type="password" id="password" value="Admin@123">
+        </div>
+        <button onclick="testLogin()">Login</button>
+        <button onclick="testHealth()" style="background: #28a745;">Health Check</button>
+
+        <div id="response"></div>
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost:8080/api/auth';
+
+        async function testHealth() {
+            try {
+                const response = await fetch(`${API_BASE}/health`);
+                const data = await response.json();
+                displayResponse(data, true);
+            } catch (error) {
+                displayResponse({ error: error.message }, false);
+            }
+        }
+
+        async function testLogin() {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+
+            try {
+                const response = await fetch(`${API_BASE}/login`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        usernameOrEmail: username,
+                        password: password
+                    })
+                });
+
+                const data = await response.json();
+                displayResponse(data, response.ok);
+
+                if (data.success && data.data && data.data.accessToken) {
+                    localStorage.setItem('token', data.data.accessToken);
+                    console.log('Token saved:', data.data.accessToken);
+                }
+            } catch (error) {
+                displayResponse({ error: error.message }, false);
+            }
+        }
+
+        function displayResponse(data, isSuccess) {
+            const responseDiv = document.getElementById('response');
+            responseDiv.className = 'response ' + (isSuccess ? 'success' : 'error');
+            responseDiv.textContent = JSON.stringify(data, null, 2);
+        }
+    </script>
+</body>
+</html>

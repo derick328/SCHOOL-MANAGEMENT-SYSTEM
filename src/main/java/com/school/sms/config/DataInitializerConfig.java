@@ -45,7 +45,6 @@ public class DataInitializerConfig {
                         .failedLoginAttempts(0)
                         .passwordExpired(false)
                         .passwordChangedAt(LocalDateTime.now())
-                        .active(true)
                         .build();
 
                 userRepository.save(admin);
@@ -71,7 +70,6 @@ public class DataInitializerConfig {
                         .failedLoginAttempts(0)
                         .passwordExpired(false)
                         .passwordChangedAt(LocalDateTime.now())
-                        .active(true)
                         .build();
 
                 userRepository.save(teacher);
@@ -96,7 +94,7 @@ public class DataInitializerConfig {
                         .failedLoginAttempts(0)
                         .passwordExpired(false)
                         .passwordChangedAt(LocalDateTime.now())
-                        .active(true)
+
                         .build();
 
                 userRepository.save(student);

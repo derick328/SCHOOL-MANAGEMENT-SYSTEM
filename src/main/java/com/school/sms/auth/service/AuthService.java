@@ -137,7 +137,6 @@ public class AuthService {
                 .failedLoginAttempts(0)
                 .passwordExpired(false)
                 .passwordChangedAt(LocalDateTime.now())
-                .active(true)
                 .build();
 
         // Generate email verification token
