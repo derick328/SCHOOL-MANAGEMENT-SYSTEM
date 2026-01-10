@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teacher Dashboard - School Management System</title>
+    <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+    <div class="dashboard">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h2>🎓 SMS Teacher</h2>
+                <p>Teacher Portal</p>
+            </div>
+            
+            <nav class="sidebar-menu">
+                <a href="#" class="menu-item active" onclick="showSection('dashboard')">
+                    <span>📊</span> Dashboard
+                </a>
+                <a href="#" class="menu-item" onclick="showSection('classes')">
+                    <span>🏫</span> My Classes
+                </a>
+                <a href="#" class="menu-item" onclick="showSection('students')">
+                    <span>👨‍🎓</span> Students
+                </a>
+                <a href="#" class="menu-item" onclick="showSection('attendance')">
+                    <span>📋</span> Attendance
+                </a>
+                <a href="#" class="menu-item" onclick="showSection('grades')">
+                    <span>📝</span> Grades & Marks
+                </a>
+                <a href="#" class="menu-item" onclick="showSection('schedule')">
+                    <span>📅</span> Schedule
+                </a>
+                <a href="#" class="menu-item" onclick="showSection('assignments')">
+                    <span>📄</span> Assignments
+                </a>
+            </nav>
+            
+            <div class="sidebar-footer">
+                <button onclick="handleLogout()" class="btn btn-danger" style="width: 100%;">
+                    Logout
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="topbar">
+                <div class="topbar-left">
+                    <h3 id="pageTitle">Teacher Dashboard</h3>
+                </div>
+                <div class="topbar-right">
+                    <div class="user-info">
+                        <div class="user-avatar" id="userAvatar">TD</div>
+                        <div>
+                            <div style="font-weight: 600; font-size: 14px;" id="userName">Teacher Demo</div>
+                            <div style="font-size: 12px; color: var(--secondary);">Teacher</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="content">
+                <!-- Dashboard Section -->
+                <div id="dashboardSection">
+                    <div class="card-grid">
+                        <div class="card">
+                            <div class="card-header">
+                                <span class="card-title">My Classes</span>
+                                <div class="card-icon icon-primary">🏫</div>
+                            </div>
+                            <div class="card-value">0</div>
+                            <div class="card-label">Classes assigned</div>
+                        </div>
+
+                        <div class="card">
+                            <div class="card-header">
+                                <span class="card-title">Total Students</span>
+                                <div class="card-icon icon-success">👨‍🎓</div>
+                            </div>
+                            <div class="card-value">0</div>
+                            <div class="card-label">Students teaching</div>
+                        </div>
+
+                        <div class="card">
+                            <div class="card-header">
+                                <span class="card-title">Pending Grades</span>
+                                <div class="card-icon icon-warning">📝</div>
+                            </div>
+                            <div class="card-value">0</div>
+                            <div class="card-label">Assignments to grade</div>
+                        </div>
+
+                        <div class="card">
+                            <div class="card-header">
+                                <span class="card-title">Attendance Rate</span>
+                                <div class="card-icon icon-info">📊</div>
+                            </div>
+                            <div class="card-value">0%</div>
+                            <div class="card-label">Overall attendance</div>
+                        </div>
+                    </div>
+
+                    <div class="table-container">
+                        <div class="table-header">
+                            <h3>Today's Schedule</h3>
+                        </div>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Time</th>
+                                    <th>Class</th>
+                                    <th>Subject</th>
+                                    <th>Room</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td colspan="5" style="text-align: center; padding: 40px; color: var(--secondary);">
+                                        No classes scheduled for today
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- My Classes Section -->
+                <div id="classesSection" style="display: none;">
+                    <div class="table-container">
+                        <div class="table-header">
+                            <h3>My Classes</h3>
+                        </div>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Class Name</th>
+                                    <th>Subject</th>
+                                    <th>Students</th>
+                                    <th>Schedule</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td colspan="5" style="text-align: center; padding: 40px; color: var(--secondary);">
+                                        No classes assigned yet
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Students Section -->
+                <div id="studentsSection" style="display: none;">
+                    <div class="table-container">
+                        <div class="table-header">
+                            <h3>My Students</h3>
+                        </div>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Roll No</th>
+                                    <th>Name</th>
+                                    <th>Class</th>
+                                    <th>Attendance</th>
+                                    <th>Grade</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td colspan="6" style="text-align: center; padding: 40px; color: var(--secondary);">
+                                        No students to display
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Attendance Section -->
+                <div id="attendanceSection" style="display: none;">
+                    <div class="table-container">
+                        <div class="table-header">
+                            <h3>Mark Attendance</h3>
+                            <div>
+                                <input type="date" id="attendanceDate" style="padding: 8px; border: 2px solid var(--border); border-radius: 8px; margin-right: 10px;">
+                                <button class="btn btn-primary btn-sm" onclick="loadAttendance()">
+                                    Load Class
+                                </button>
+                            </div>
+                        </div>
+                        <p style="color: var(--secondary); padding: 20px;">Select a date and class to mark attendance</p>
+                    </div>
+                </div>
+
+                <!-- Grades Section -->
+                <div id="gradesSection" style="display: none;">
+                    <div class="table-container">
+                        <div class="table-header">
+                            <h3>Enter Grades & Marks</h3>
+                        </div>
+                        <p style="color: var(--secondary); padding: 20px;">Grading module coming soon...</p>
+                    </div>
+                </div>
+
+                <!-- Schedule Section -->
+                <div id="scheduleSection" style="display: none;">
+                    <div class="table-container">
+                        <div class="table-header">
+                            <h3>Weekly Schedule</h3>
+                        </div>
+                        <p style="color: var(--secondary); padding: 20px;">Schedule module coming soon...</p>
+                    </div>
+                </div>
+
+                <!-- Assignments Section -->
+                <div id="assignmentsSection" style="display: none;">
+                    <div class="table-container">
+                        <div class="table-header">
+                            <h3>Assignments</h3>
+                            <button class="btn btn-primary btn-sm" onclick="createAssignment()">
+                                + Create Assignment
+                            </button>
+                        </div>
+                        <p style="color: var(--secondary); padding: 20px;">Assignments module coming soon...</p>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="/js/app.js"></script>
+    <script>
+        initDashboard();
+
+        function showSection(section) {
+            document.querySelectorAll('[id$="Section"]').forEach(el => el.style.display = 'none');
+            document.getElementById(section + 'Section').style.display = 'block';
+            document.querySelectorAll('.menu-item').forEach(el => el.classList.remove('active'));
+            event.target.closest('.menu-item').classList.add('active');
+            
+            const titles = {
+                dashboard: 'Teacher Dashboard',
+                classes: 'My Classes',
+                students: 'My Students',
+                attendance: 'Mark Attendance',
+                grades: 'Grades & Marks',
+                schedule: 'Weekly Schedule',
+                assignments: 'Assignments'
+            };
+            document.getElementById('pageTitle').textContent = titles[section];
+        }
+
+        function loadAttendance() {
+            UI.showAlert('Attendance marking will be implemented with backend API', 'info');
+        }
+
+        function createAssignment() {
+            UI.showAlert('Assignment creation will be implemented with backend API', 'info');
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Dashboard - School Management System</title>
+    <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+    <div class="dashboard">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h2>🎓 SMS Student</h2>
+                <p>Student Portal</p>
+            </div>
+            
+            <nav class="sidebar-menu">
+                <a href="#" class="menu-item active" onclick="showSection('dashboard')">
+                    <span>📊</span> Dashboard
+                </a>
+                <a href="#" class="menu-item" onclick="showSection('profile')">
+                    <span>👤</span> My Profile
+                </a>
+                <a href="#" class="menu-item" onclick="showSection('schedule')">
+                    <span>📅</span> Class Schedule
+                </a>
+                <a href="#" class="menu-item" onclick="showSection('attendance')">
+                    <span>📋</span> My Attendance
+                </a>
+                <a href="#" class="menu-item" onclick="showSection('grades')">
+                    <span>📝</span> Grades & Results
+                </a>
+                <a href="#" class="menu-item" onclick="showSection('assignments')">
+                    <span>📄</span> Assignments
+                </a>
+                <a href="#" class="menu-item" onclick="showSection('fees')">
+                    <span>💰</span> Fee Details
+                </a>
+            </nav>
+            
+            <div class="sidebar-footer">
+                <button onclick="handleLogout()" class="btn btn-danger" style="width: 100%;">
+                    Logout
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="topbar">
+                <div class="topbar-left">
+                    <h3 id="pageTitle">Student Dashboard</h3>
+                </div>
+                <div class="topbar-right">
+                    <div class="user-info">
+                        <div class="user-avatar" id="userAvatar">SD</div>
+                        <div>
+                            <div style="font-weight: 600; font-size: 14px;" id="userName">Student Demo</div>
+                            <div style="font-size: 12px; color: var(--secondary);">Student</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="content">
+                <!-- Dashboard Section -->
+                <div id="dashboardSection">
+                    <div class="card-grid">
+                        <div class="card">
+                            <div class="card-header">
+                                <span class="card-title">Attendance Rate</span>
+                                <div class="card-icon icon-success">📊</div>
+                            </div>
+                            <div class="card-value">0%</div>
+                            <div class="card-label">Overall attendance</div>
+                        </div>
+
+                        <div class="card">
+                            <div class="card-header">
+                                <span class="card-title">Average Grade</span>
+                                <div class="card-icon icon-primary">🎯</div>
+                            </div>
+                            <div class="card-value">-</div>
+                            <div class="card-label">Current average</div>
+                        </div>
+
+                        <div class="card">
+                            <div class="card-header">
+                                <span class="card-title">Pending Assignments</span>
+                                <div class="card-icon icon-warning">📄</div>
+                            </div>
+                            <div class="card-value">0</div>
+                            <div class="card-label">Assignments due</div>
+                        </div>
+
+                        <div class="card">
+                            <div class="card-header">
+                                <span class="card-title">Fee Status</span>
+                                <div class="card-icon icon-info">💰</div>
+                            </div>
+                            <div class="card-value">Paid</div>
+                            <div class="card-label">Current status</div>
+                        </div>
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 24px;">
+                        <!-- Today's Schedule -->
+                        <div class="table-container">
+                            <div class="table-header">
+                                <h3>Today's Classes</h3>
+                            </div>
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Time</th>
+                                        <th>Subject</th>
+                                        <th>Teacher</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td colspan="3" style="text-align: center; padding: 40px; color: var(--secondary);">
+                                            No classes today
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- Recent Grades -->
+                        <div class="table-container">
+                            <div class="table-header">
+                                <h3>Recent Grades</h3>
+                            </div>
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Subject</th>
+                                        <th>Grade</th>
+                                        <th>Date</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td colspan="3" style="text-align: center; padding: 40px; color: var(--secondary);">
+                                            No grades yet
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Announcements -->
+                    <div class="table-container">
+                        <div class="table-header">
+                            <h3>📢 Announcements</h3>
+                        </div>
+                        <p style="color: var(--secondary); padding: 20px;">No new announcements</p>
+                    </div>
+                </div>
+
+                <!-- Profile Section -->
+                <div id="profileSection" style="display: none;">
+                    <div class="table-container">
+                        <div class="table-header">
+                            <h3>My Profile</h3>
+                            <button class="btn btn-primary btn-sm" onclick="editProfile()">
+                                Edit Profile
+                            </button>
+                        </div>
+                        <div style="padding: 20px;">
+                            <div style="display: grid; grid-template-columns: 200px 1fr; gap: 20px; max-width: 800px;">
+                                <div style="text-align: center;">
+                                    <div style="width: 150px; height: 150px; border-radius: 50%; background: var(--primary); color: white; display: flex; align-items: center; justify-content: center; font-size: 48px; margin: 0 auto;">
+                                        SD
+                                    </div>
+                                </div>
+                                <div>
+                                    <h3 style="margin-bottom: 20px; color: var(--dark);">Personal Information</h3>
+                                    <div style="display: grid; grid-template-columns: 150px 1fr; gap: 15px; color: var(--dark);">
+                                        <strong>Full Name:</strong> <span id="profileName">-</span>
+                                        <strong>Email:</strong> <span id="profileEmail">-</span>
+                                        <strong>Roll Number:</strong> <span id="profileRoll">-</span>
+                                        <strong>Class:</strong> <span id="profileClass">-</span>
+                                        <strong>Date of Birth:</strong> <span id="profileDOB">-</span>
+                                        <strong>Gender:</strong> <span id="profileGender">-</span>
+                                        <strong>Phone:</strong> <span id="profilePhone">-</span>
+                                        <strong>Address:</strong> <span id="profileAddress">-</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Schedule Section -->
+                <div id="scheduleSection" style="display: none;">
+                    <div class="table-container">
+                        <div class="table-header">
+                            <h3>Weekly Class Schedule</h3>
+                        </div>
+                        <p style="color: var(--secondary); padding: 20px;">Schedule will be available once classes are assigned</p>
+                    </div>
+                </div>
+
+                <!-- Attendance Section -->
+                <div id="attendanceSection" style="display: none;">
+                    <div class="table-container">
+                        <div class="table-header">
+                            <h3>My Attendance Record</h3>
+                            <div>
+                                <input type="month" id="attendanceMonth" style="padding: 8px; border: 2px solid var(--border); border-radius: 8px;">
+                            </div>
+                        </div>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Subject</th>
+                                    <th>Status</th>
+                                    <th>Remarks</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td colspan="4" style="text-align: center; padding: 40px; color: var(--secondary);">
+                                        No attendance records
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Grades Section -->
+                <div id="gradesSection" style="display: none;">
+                    <div class="table-container">
+                        <div class="table-header">
+                            <h3>My Grades & Results</h3>
+                        </div>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Subject</th>
+                                    <th>Exam Type</th>
+                                    <th>Marks</th>
+                                    <th>Grade</th>
+                                    <th>Date</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td colspan="5" style="text-align: center; padding: 40px; color: var(--secondary);">
+                                        No grades available
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Assignments Section -->
+                <div id="assignmentsSection" style="display: none;">
+                    <div class="table-container">
+                        <div class="table-header">
+                            <h3>My Assignments</h3>
+                        </div>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Subject</th>
+                                    <th>Title</th>
+                                    <th>Due Date</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td colspan="5" style="text-align: center; padding: 40px; color: var(--secondary);">
+                                        No assignments
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Fees Section -->
+                <div id="feesSection" style="display: none;">
+                    <div class="table-container">
+                        <div class="table-header">
+                            <h3>Fee Details</h3>
+                        </div>
+                        <div style="padding: 20px;">
+                            <div style="max-width: 600px; margin: 0 auto;">
+                                <div style="background: var(--light); padding: 20px; border-radius: 12px; margin-bottom: 20px;">
+                                    <h4 style="color: var(--dark); margin-bottom: 15px;">Current Academic Year</h4>
+                                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                                        <strong>Total Fee:</strong> <span>$0.00</span>
+                                        <strong>Paid:</strong> <span style="color: var(--success);">$0.00</span>
+                                        <strong>Balance:</strong> <span style="color: var(--danger);">$0.00</span>
+                                        <strong>Status:</strong> <span class="badge badge-success">Paid</span>
+                                    </div>
+                                </div>
+                                <button class="btn btn-primary btn-sm" onclick="viewFeeHistory()">
+                                    View Payment History
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="/js/app.js"></script>
+    <script>
+        initDashboard();
+
+        function showSection(section) {
+            document.querySelectorAll('[id$="Section"]').forEach(el => el.style.display = 'none');
+            document.getElementById(section + 'Section').style.display = 'block';
+            document.querySelectorAll('.menu-item').forEach(el => el.classList.remove('active'));
+            event.target.closest('.menu-item').classList.add('active');
+            
+            const titles = {
+                dashboard: 'Student Dashboard',
+                profile: 'My Profile',
+                schedule: 'Class Schedule',
+                attendance: 'My Attendance',
+                grades: 'Grades & Results',
+                assignments: 'My Assignments',
+                fees: 'Fee Details'
+            };
+            document.getElementById('pageTitle').textContent = titles[section];
+        }
+
+        function editProfile() {
+            UI.showAlert('Profile editing will be implemented with backend API', 'info');
+        }
+
+        function viewFeeHistory() {
+            UI.showAlert('Fee history will be implemented with backend API', 'info');
+        }
+
+        // Load profile data
+        async function loadProfileData() {
+            const user = Auth.getUser();
+            if (user) {
+                document.getElementById('profileName').textContent = `${user.firstName} ${user.lastName}`;
+                document.getElementById('profileEmail').textContent = user.email || '-';
+                document.getElementById('profileRoll').textContent = user.username || '-';
+            }
+        }
+
+        loadProfileData();
+    </script>
+</body>
+</html>

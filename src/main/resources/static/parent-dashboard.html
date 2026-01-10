@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Parent Dashboard - School Management System</title>
+    <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+    <div class="dashboard">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h2>🎓 SMS Parent</h2>
+                <p>Parent Portal</p>
+            </div>
+            
+            <nav class="sidebar-menu">
+                <a href="#" class="menu-item active" onclick="showSection('dashboard')">
+                    <span>📊</span> Dashboard
+                </a>
+                <a href="#" class="menu-item" onclick="showSection('children')">
+                    <span>👶</span> My Children
+                </a>
+                <a href="#" class="menu-item" onclick="showSection('attendance')">
+                    <span>📋</span> Attendance
+                </a>
+                <a href="#" class="menu-item" onclick="showSection('grades')">
+                    <span>📝</span> Academic Performance
+                </a>
+                <a href="#" class="menu-item" onclick="showSection('fees')">
+                    <span>💰</span> Fee Payments
+                </a>
+                <a href="#" class="menu-item" onclick="showSection('teachers')">
+                    <span>👨‍🏫</span> Teachers
+                </a>
+                <a href="#" class="menu-item" onclick="showSection('announcements')">
+                    <span>📢</span> Announcements
+                </a>
+            </nav>
+            
+            <div class="sidebar-footer">
+                <button onclick="handleLogout()" class="btn btn-danger" style="width: 100%;">
+                    Logout
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="topbar">
+                <div class="topbar-left">
+                    <h3 id="pageTitle">Parent Dashboard</h3>
+                </div>
+                <div class="topbar-right">
+                    <div class="user-info">
+                        <div class="user-avatar" id="userAvatar">PD</div>
+                        <div>
+                            <div style="font-weight: 600; font-size: 14px;" id="userName">Parent Demo</div>
+                            <div style="font-size: 12px; color: var(--secondary);">Parent</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="content">
+                <!-- Dashboard Section -->
+                <div id="dashboardSection">
+                    <div class="card-grid">
+                        <div class="card">
+                            <div class="card-header">
+                                <span class="card-title">My Children</span>
+                                <div class="card-icon icon-primary">👶</div>
+                            </div>
+                            <div class="card-value">0</div>
+                            <div class="card-label">Registered children</div>
+                        </div>
+
+                        <div class="card">
+                            <div class="card-header">
+                                <span class="card-title">Avg Attendance</span>
+                                <div class="card-icon icon-success">📊</div>
+                            </div>
+                            <div class="card-value">0%</div>
+                            <div class="card-label">Overall attendance</div>
+                        </div>
+
+                        <div class="card">
+                            <div class="card-header">
+                                <span class="card-title">Pending Fees</span>
+                                <div class="card-icon icon-warning">💰</div>
+                            </div>
+                            <div class="card-value">$0</div>
+                            <div class="card-label">Outstanding balance</div>
+                        </div>
+
+                        <div class="card">
+                            <div class="card-header">
+                                <span class="card-title">Notifications</span>
+                                <div class="card-icon icon-info">🔔</div>
+                            </div>
+                            <div class="card-value">0</div>
+                            <div class="card-label">Unread messages</div>
+                        </div>
+                    </div>
+
+                    <!-- Children Overview -->
+                    <div class="table-container" style="margin-bottom: 24px;">
+                        <div class="table-header">
+                            <h3>Children Overview</h3>
+                            <button class="btn btn-primary btn-sm" onclick="addChild()">
+                                + Link Child
+                            </button>
+                        </div>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Class</th>
+                                    <th>Attendance</th>
+                                    <th>Avg Grade</th>
+                                    <th>Fee Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td colspan="6" style="text-align: center; padding: 40px; color: var(--secondary);">
+                                        No children linked. Click "Link Child" to add your child's information.
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Recent Announcements -->
+                    <div class="table-container">
+                        <div class="table-header">
+                            <h3>📢 Recent Announcements</h3>
+                        </div>
+                        <p style="color: var(--secondary); padding: 20px;">No new announcements</p>
+                    </div>
+                </div>
+
+                <!-- My Children Section -->
+                <div id="childrenSection" style="display: none;">
+                    <div class="table-container">
+                        <div class="table-header">
+                            <h3>My Children Details</h3>
+                            <button class="btn btn-primary btn-sm" onclick="addChild()">
+                                + Link Child
+                            </button>
+                        </div>
+                        <div style="padding: 20px;">
+                            <p style="color: var(--secondary);">No children linked to your account</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Attendance Section -->
+                <div id="attendanceSection" style="display: none;">
+                    <div class="table-container">
+                        <div class="table-header">
+                            <h3>Attendance Records</h3>
+                            <div>
+                                <select id="childSelect" style="padding: 8px; border: 2px solid var(--border); border-radius: 8px; margin-right: 10px;">
+                                    <option value="">Select Child</option>
+                                </select>
+                                <input type="month" id="attendanceMonth" style="padding: 8px; border: 2px solid var(--border); border-radius: 8px;">
+                            </div>
+                        </div>
+                        <p style="color: var(--secondary); padding: 20px;">Select a child to view attendance records</p>
+                    </div>
+                </div>
+
+                <!-- Grades Section -->
+                <div id="gradesSection" style="display: none;">
+                    <div class="table-container">
+                        <div class="table-header">
+                            <h3>Academic Performance</h3>
+                            <select id="childSelectGrades" style="padding: 8px; border: 2px solid var(--border); border-radius: 8px;">
+                                <option value="">Select Child</option>
+                            </select>
+                        </div>
+                        <p style="color: var(--secondary); padding: 20px;">Select a child to view academic performance</p>
+                    </div>
+                </div>
+
+                <!-- Fees Section -->
+                <div id="feesSection" style="display: none;">
+                    <div class="table-container">
+                        <div class="table-header">
+                            <h3>Fee Payments</h3>
+                        </div>
+                        <div style="padding: 20px;">
+                            <p style="color: var(--secondary);">No fee records available</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Teachers Section -->
+                <div id="teachersSection" style="display: none;">
+                    <div class="table-container">
+                        <div class="table-header">
+                            <h3>Contact Teachers</h3>
+                            <select id="childSelectTeachers" style="padding: 8px; border: 2px solid var(--border); border-radius: 8px;">
+                                <option value="">Select Child</option>
+                            </select>
+                        </div>
+                        <p style="color: var(--secondary); padding: 20px;">Select a child to view their teachers</p>
+                    </div>
+                </div>
+
+                <!-- Announcements Section -->
+                <div id="announcementsSection" style="display: none;">
+                    <div class="table-container">
+                        <div class="table-header">
+                            <h3>All Announcements</h3>
+                        </div>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Title</th>
+                                    <th>For</th>
+                                    <th>Priority</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td colspan="5" style="text-align: center; padding: 40px; color: var(--secondary);">
+                                        No announcements available
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="/js/app.js"></script>
+    <script>
+        initDashboard();
+
+        function showSection(section) {
+            document.querySelectorAll('[id$="Section"]').forEach(el => el.style.display = 'none');
+            document.getElementById(section + 'Section').style.display = 'block';
+            document.querySelectorAll('.menu-item').forEach(el => el.classList.remove('active'));
+            event.target.closest('.menu-item').classList.add('active');
+            
+            const titles = {
+                dashboard: 'Parent Dashboard',
+                children: 'My Children',
+                attendance: 'Attendance Records',
+                grades: 'Academic Performance',
+                fees: 'Fee Payments',
+                teachers: 'Contact Teachers',
+                announcements: 'Announcements'
+            };
+            document.getElementById('pageTitle').textContent = titles[section];
+        }
+
+        function addChild() {
+            UI.showAlert('Child linking functionality will be implemented with backend API', 'info');
+        }
+    </script>
+</body>
+</html>

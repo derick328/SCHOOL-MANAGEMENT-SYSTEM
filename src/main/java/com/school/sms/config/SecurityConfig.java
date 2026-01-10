@@ -97,6 +97,7 @@ public class SecurityConfig {
                                                                 "/api/public/**",
                                                                 "/",
                                                                 "/index.html",
+                                                                "/login.html",
                                                                 "/login",
                                                                 "/register",
                                                                 "/forgot-password",
@@ -112,16 +113,16 @@ public class SecurityConfig {
                                                 // Admin endpoints
                                                 .requestMatchers("/api/admin/**", "/admin/**").hasRole("ADMIN")
 
-                                                // Teacher endpoints
-                                                .requestMatchers("/api/teacher/**", "/teacher/**")
+                                                // Teacher dashboard
+                                                .requestMatchers("/teacher-dashboard.html", "/api/teacher/**")
                                                 .hasAnyRole("ADMIN", "TEACHER")
 
-                                                // Student endpoints
-                                                .requestMatchers("/api/student/**", "/student/**")
+                                                // Student dashboard
+                                                .requestMatchers("/student-dashboard.html", "/api/student/**")
                                                 .hasAnyRole("ADMIN", "TEACHER", "STUDENT")
 
-                                                // Parent endpoints
-                                                .requestMatchers("/api/parent/**", "/parent/**")
+                                                // Parent dashboard
+                                                .requestMatchers("/parent-dashboard.html", "/api/parent/**")
                                                 .hasAnyRole("ADMIN", "PARENT")
 
                                                 // All other requests require authentication

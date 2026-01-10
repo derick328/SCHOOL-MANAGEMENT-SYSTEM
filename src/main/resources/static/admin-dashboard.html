@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - School Management System</title>
+    <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+    <div class="dashboard">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h2>🎓 SMS Admin</h2>
+                <p>Administrator Panel</p>
+            </div>
+            
+            <nav class="sidebar-menu">
+                <a href="#" class="menu-item active" onclick="showSection('dashboard')">
+                    <span>📊</span> Dashboard
+                </a>
+                <a href="#" class="menu-item" onclick="showSection('students')">
+                    <span>👨‍🎓</span> Students
+                </a>
+                <a href="#" class="menu-item" onclick="showSection('teachers')">
+                    <span>👨‍🏫</span> Teachers
+                </a>
+                <a href="#" class="menu-item" onclick="showSection('classes')">
+                    <span>🏫</span> Classes
+                </a>
+                <a href="#" class="menu-item" onclick="showSection('subjects')">
+                    <span>📚</span> Subjects
+                </a>
+                <a href="#" class="menu-item" onclick="showSection('attendance')">
+                    <span>📋</span> Attendance
+                </a>
+                <a href="#" class="menu-item" onclick="showSection('exams')">
+                    <span>📝</span> Exams & Results
+                </a>
+                <a href="#" class="menu-item" onclick="showSection('fees')">
+                    <span>💰</span> Fee Management
+                </a>
+                <a href="#" class="menu-item" onclick="showSection('users')">
+                    <span>👥</span> User Management
+                </a>
+            </nav>
+            
+            <div class="sidebar-footer">
+                <button onclick="handleLogout()" class="btn btn-danger" style="width: 100%;">
+                    Logout
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="topbar">
+                <div class="topbar-left">
+                    <h3 id="pageTitle">Dashboard Overview</h3>
+                </div>
+                <div class="topbar-right">
+                    <div class="user-info">
+                        <div class="user-avatar" id="userAvatar">AD</div>
+                        <div>
+                            <div style="font-weight: 600; font-size: 14px;" id="userName">Admin User</div>
+                            <div style="font-size: 12px; color: var(--secondary);">Administrator</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="content">
+                <!-- Dashboard Section -->
+                <div id="dashboardSection">
+                    <div class="card-grid">
+                        <div class="card">
+                            <div class="card-header">
+                                <span class="card-title">Total Students</span>
+                                <div class="card-icon icon-primary">👨‍🎓</div>
+                            </div>
+                            <div class="card-value" id="totalStudents">0</div>
+                            <div class="card-label">Enrolled students</div>
+                        </div>
+
+                        <div class="card">
+                            <div class="card-header">
+                                <span class="card-title">Total Teachers</span>
+                                <div class="card-icon icon-success">👨‍🏫</div>
+                            </div>
+                            <div class="card-value" id="totalTeachers">0</div>
+                            <div class="card-label">Active teachers</div>
+                        </div>
+
+                        <div class="card">
+                            <div class="card-header">
+                                <span class="card-title">Total Classes</span>
+                                <div class="card-icon icon-warning">🏫</div>
+                            </div>
+                            <div class="card-value" id="totalClasses">0</div>
+                            <div class="card-label">Active classes</div>
+                        </div>
+
+                        <div class="card">
+                            <div class="card-header">
+                                <span class="card-title">Total Subjects</span>
+                                <div class="card-icon icon-danger">📚</div>
+                            </div>
+                            <div class="card-value" id="totalSubjects">0</div>
+                            <div class="card-label">Subjects offered</div>
+                        </div>
+                    </div>
+
+                    <div class="table-container">
+                        <div class="table-header">
+                            <h3>Recent Activities</h3>
+                        </div>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>User</th>
+                                    <th>Action</th>
+                                    <th>Status</th>
+                                    <th>Time</th>
+                                </tr>
+                            </thead>
+                            <tbody id="recentActivities">
+                                <tr>
+                                    <td colspan="4" style="text-align: center; padding: 40px;">
+                                        Loading activities...
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Students Section -->
+                <div id="studentsSection" style="display: none;">
+                    <div class="table-container">
+                        <div class="table-header">
+                            <h3>Student Management</h3>
+                            <button class="btn btn-primary btn-sm" onclick="showAddStudentModal()">
+                                + Add Student
+                            </button>
+                        </div>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Name</th>
+                                    <th>Email</th>
+                                    <th>Class</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="studentsTable">
+                                <tr>
+                                    <td colspan="6" style="text-align: center; padding: 40px;">
+                                        No students found. Click "Add Student" to create one.
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Teachers Section -->
+                <div id="teachersSection" style="display: none;">
+                    <div class="table-container">
+                        <div class="table-header">
+                            <h3>Teacher Management</h3>
+                            <button class="btn btn-primary btn-sm" onclick="showAddTeacherModal()">
+                                + Add Teacher
+                            </button>
+                        </div>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Name</th>
+                                    <th>Email</th>
+                                    <th>Subject</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="teachersTable">
+                                <tr>
+                                    <td colspan="6" style="text-align: center; padding: 40px;">
+                                        Teachers module coming soon...
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Other sections (placeholder) -->
+                <div id="classesSection" style="display: none;">
+                    <div class="table-container">
+                        <h3>Class Management</h3>
+                        <p style="color: var(--secondary); padding: 20px;">Class management module coming soon...</p>
+                    </div>
+                </div>
+
+                <div id="subjectsSection" style="display: none;">
+                    <div class="table-container">
+                        <h3>Subject Management</h3>
+                        <p style="color: var(--secondary); padding: 20px;">Subject management module coming soon...</p>
+                    </div>
+                </div>
+
+                <div id="attendanceSection" style="display: none;">
+                    <div class="table-container">
+                        <h3>Attendance Management</h3>
+                        <p style="color: var(--secondary); padding: 20px;">Attendance module coming soon...</p>
+                    </div>
+                </div>
+
+                <div id="examsSection" style="display: none;">
+                    <div class="table-container">
+                        <h3>Exam Management</h3>
+                        <p style="color: var(--secondary); padding: 20px;">Exam module coming soon...</p>
+                    </div>
+                </div>
+
+                <div id="feesSection" style="display: none;">
+                    <div class="table-container">
+                        <h3>Fee Management</h3>
+                        <p style="color: var(--secondary); padding: 20px;">Fee management module coming soon...</p>
+                    </div>
+                </div>
+
+                <div id="usersSection" style="display: none;">
+                    <div class="table-container">
+                        <h3>User Management</h3>
+                        <p style="color: var(--secondary); padding: 20px;">User management module coming soon...</p>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="/js/app.js"></script>
+    <script>
+        // Initialize dashboard
+        initDashboard();
+
+        // Show specific section
+        function showSection(section) {
+            // Hide all sections
+            document.querySelectorAll('[id$="Section"]').forEach(el => el.style.display = 'none');
+            
+            // Show selected section
+            document.getElementById(section + 'Section').style.display = 'block';
+            
+            // Update active menu item
+            document.querySelectorAll('.menu-item').forEach(el => el.classList.remove('active'));
+            event.target.closest('.menu-item').classList.add('active');
+            
+            // Update page title
+            const titles = {
+                dashboard: 'Dashboard Overview',
+                students: 'Student Management',
+                teachers: 'Teacher Management',
+                classes: 'Class Management',
+                subjects: 'Subject Management',
+                attendance: 'Attendance Management',
+                exams: 'Exam Management',
+                fees: 'Fee Management',
+                users: 'User Management'
+            };
+            document.getElementById('pageTitle').textContent = titles[section];
+        }
+
+        // Load dashboard data
+        async function loadDashboardData() {
+            try {
+                // These would be real API calls in production
+                document.getElementById('totalStudents').textContent = '0';
+                document.getElementById('totalTeachers').textContent = '0';
+                document.getElementById('totalClasses').textContent = '0';
+                document.getElementById('totalSubjects').textContent = '0';
+
+                // Load recent activities
+                const activitiesTable = document.getElementById('recentActivities');
+                activitiesTable.innerHTML = `
+                    <tr>
+                        <td colspan="4" style="text-align: center; padding: 40px; color: var(--secondary);">
+                            No recent activities
+                        </td>
+                    </tr>
+                `;
+            } catch (error) {
+                console.error('Error loading dashboard data:', error);
+            }
+        }
+
+        // Placeholder functions
+        function showAddStudentModal() {
+            UI.showAlert('Student creation form will be implemented with backend API', 'info');
+        }
+
+        function showAddTeacherModal() {
+            UI.showAlert('Teacher creation form will be implemented with backend API', 'info');
+        }
+
+        // Load data on page load
+        loadDashboardData();
+    </script>
+</body>
+</html>
