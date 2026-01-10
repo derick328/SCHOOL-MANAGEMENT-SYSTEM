@@ -1,0 +1,138 @@
+###############################################
+# School Management System - Getting Started #
+###############################################
+
+QUICK START GUIDE
+================
+
+1. START POSTGRESQL
+------------------
+Ensure PostgreSQL is running on your system.
+Default connection: localhost:5432
+
+Create the database:
+```sql
+CREATE DATABASE school_management_db;
+```
+
+2. UPDATE CONFIGURATION
+----------------------
+Edit: src/main/resources/application.yml
+
+Change these values if needed:
+- Database URL, username, password
+- JWT secret (MUST change in production)
+- Email configuration (for password reset)
+
+3. BUILD & RUN
+-------------
+# Clean build
+mvn clean install
+
+# Run application
+mvn spring-boot:run
+
+# Or run the JAR directly
+java -jar target/school-management-system-1.0.0.jar
+
+4. ACCESS APPLICATION
+--------------------
+Base URL: http://localhost:8080
+API Base: http://localhost:8080/api
+
+5. DEFAULT CREDENTIALS
+---------------------
+Admin:
+  Username: admin
+  Password: Admin@123
+
+Teacher Demo:
+  Username: teacher_demo
+  Password: Teacher@123
+
+Student Demo:
+  Username: student_demo
+  Password: Student@123
+
+⚠️ CHANGE THESE PASSWORDS IMMEDIATELY!
+
+6. TEST THE API
+--------------
+Use Postman, cURL, or any HTTP client.
+
+Example login request:
+POST http://localhost:8080/api/auth/login
+Content-Type: application/json
+
+{
+  "usernameOrEmail": "admin",
+  "password": "Admin@123"
+}
+
+Response will include:
+- accessToken (use for authenticated requests)
+- refreshToken (use to get new access token)
+- user information
+
+7. AUTHENTICATED REQUESTS
+-------------------------
+Add header to all protected endpoints:
+Authorization: Bearer <your-access-token>
+
+Example:
+GET http://localhost:8080/api/auth/me
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+
+8. COMMON ENDPOINTS
+------------------
+POST   /api/auth/register       - Register new user
+POST   /api/auth/login          - Login
+POST   /api/auth/logout         - Logout
+GET    /api/auth/me             - Get current user
+POST   /api/auth/change-password - Change password
+POST   /api/auth/forgot-password - Request password reset
+POST   /api/auth/reset-password  - Reset password with token
+POST   /api/auth/refresh         - Refresh access token
+
+9. TROUBLESHOOTING
+-----------------
+Issue: "Table doesn't exist"
+Solution: Check spring.jpa.hibernate.ddl-auto in application.yml
+         Set to 'create' for first run, then 'update'
+
+Issue: "Connection refused"
+Solution: Ensure PostgreSQL is running and credentials are correct
+
+Issue: "JWT signature does not match"
+Solution: Ensure JWT secret is configured properly
+
+Issue: "Access Denied"
+Solution: Check if user has required role for the endpoint
+
+10. LOGGING
+----------
+Application logs: ./logs/school-management-system.log
+Console logs: Enabled (see application.yml for log levels)
+
+11. NEXT STEPS
+-------------
+- Change default passwords
+- Configure email SMTP settings
+- Review security settings in application.yml
+- Implement additional modules as needed
+- Create frontend UI or use REST client
+
+12. DOCUMENTATION
+----------------
+- README.md: Full documentation
+- JavaDocs: Generate with 'mvn javadoc:javadoc'
+- API Documentation: Consider adding Swagger/OpenAPI
+
+13. SUPPORT
+----------
+Check logs for detailed error messages.
+Review console output during startup.
+
+========================================
+Happy Coding! 🎓
+========================================
