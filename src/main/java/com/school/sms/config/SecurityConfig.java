@@ -36,141 +36,146 @@ import java.util.List;
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-    private final UserDetailsServiceImpl userDetailsService;
-    private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
-    private final JwtAuthenticationFilter jwtAuthenticationFilter;
+        private final UserDetailsServiceImpl userDetailsService;
+        private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
+        private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
-    /**
-     * Password encoder bean
-     * Uses BCrypt with strength 12
-     */
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder(12);
-    }
+        /**
+         * Password encoder bean
+         * Uses BCrypt with strength 12
+         */
+        @Bean
+        public PasswordEncoder passwordEncoder() {
+                return new BCryptPasswordEncoder(12);
+        }
 
-    /**
-     * Authentication provider
-     */
-    @Bean
-    public AuthenticationProvider authenticationProvider() {
-        DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
-        authProvider.setUserDetailsService(userDetailsService);
-        authProvider.setPasswordEncoder(passwordEncoder());
-        return authProvider;
-    }
+        /**
+         * Authentication provider
+         */
+        @Bean
+        public AuthenticationProvider authenticationProvider() {
+                DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
+                authProvider.setUserDetailsService(userDetailsService);
+                authProvider.setPasswordEncoder(passwordEncoder());
+                return authProvider;
+        }
 
-    /**
-     * Authentication manager
-     */
-    @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration config)
-            throws Exception {
-        return config.getAuthenticationManager();
-    }
+        /**
+         * Authentication manager
+         */
+        @Bean
+        public AuthenticationManager authenticationManager(AuthenticationConfiguration config)
+                        throws Exception {
+                return config.getAuthenticationManager();
+        }
 
-    /**
-     * Security filter chain configuration
-     */
-    @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http
-                // Disable CSRF for stateless JWT authentication
-                .csrf(AbstractHttpConfigurer::disable)
+        /**
+         * Security filter chain configuration
+         */
+        @Bean
+        public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+                http
+                                // Disable CSRF for stateless JWT authentication
+                                .csrf(AbstractHttpConfigurer::disable)
 
-                // Configure CORS
-                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+                                // Configure CORS
+                                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
 
-                // Exception handling
-                .exceptionHandling(exception -> exception
-                        .authenticationEntryPoint(jwtAuthenticationEntryPoint))
+                                // Exception handling
+                                .exceptionHandling(exception -> exception
+                                                .authenticationEntryPoint(jwtAuthenticationEntryPoint))
 
-                // Session management - stateless
-                .sessionManagement(session -> session
-                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                                // Session management - stateless
+                                .sessionManagement(session -> session
+                                                .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 
-                // Authorization rules
-                .authorizeHttpRequests(auth -> auth
-                        // Public endpoints
-                        .requestMatchers(
-                                "/api/auth/**",
-                                "/api/public/**",
-                                "/",
-                                "/login",
-                                "/register",
-                                "/forgot-password",
-                                "/reset-password",
-                                "/error",
-                                "/css/**",
-                                "/js/**",
-                                "/images/**",
-                                "/webjars/**")
-                        .permitAll()
+                                // Authorization rules
+                                .authorizeHttpRequests(auth -> auth
+                                                // Public endpoints
+                                                .requestMatchers(
+                                                                "/api/auth/**",
+                                                                "/api/public/**",
+                                                                "/",
+                                                                "/index.html",
+                                                                "/login",
+                                                                "/register",
+                                                                "/forgot-password",
+                                                                "/reset-password",
+                                                                "/error",
+                                                                "/css/**",
+                                                                "/js/**",
+                                                                "/images/**",
+                                                                "/webjars/**",
+                                                                "/favicon.ico")
+                                                .permitAll()
 
-                        // Admin endpoints
-                        .requestMatchers("/api/admin/**", "/admin/**").hasRole("ADMIN")
+                                                // Admin endpoints
+                                                .requestMatchers("/api/admin/**", "/admin/**").hasRole("ADMIN")
 
-                        // Teacher endpoints
-                        .requestMatchers("/api/teacher/**", "/teacher/**").hasAnyRole("ADMIN", "TEACHER")
+                                                // Teacher endpoints
+                                                .requestMatchers("/api/teacher/**", "/teacher/**")
+                                                .hasAnyRole("ADMIN", "TEACHER")
 
-                        // Student endpoints
-                        .requestMatchers("/api/student/**", "/student/**").hasAnyRole("ADMIN", "TEACHER", "STUDENT")
+                                                // Student endpoints
+                                                .requestMatchers("/api/student/**", "/student/**")
+                                                .hasAnyRole("ADMIN", "TEACHER", "STUDENT")
 
-                        // Parent endpoints
-                        .requestMatchers("/api/parent/**", "/parent/**").hasAnyRole("ADMIN", "PARENT")
+                                                // Parent endpoints
+                                                .requestMatchers("/api/parent/**", "/parent/**")
+                                                .hasAnyRole("ADMIN", "PARENT")
 
-                        // All other requests require authentication
-                        .anyRequest().authenticated())
+                                                // All other requests require authentication
+                                                .anyRequest().authenticated())
 
-                // Add JWT filter
-                .authenticationProvider(authenticationProvider())
-                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+                                // Add JWT filter
+                                .authenticationProvider(authenticationProvider())
+                                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
-        return http.build();
-    }
+                return http.build();
+        }
 
-    /**
-     * CORS configuration
-     */
-    @Bean
-    public CorsConfigurationSource corsConfigurationSource() {
-        CorsConfiguration configuration = new CorsConfiguration();
+        /**
+         * CORS configuration
+         */
+        @Bean
+        public CorsConfigurationSource corsConfigurationSource() {
+                CorsConfiguration configuration = new CorsConfiguration();
 
-        // Allowed origins
-        configuration.setAllowedOrigins(Arrays.asList(
-                "http://localhost:3000",
-                "http://localhost:8080",
-                "http://localhost:5173"));
+                // Allowed origins
+                configuration.setAllowedOrigins(Arrays.asList(
+                                "http://localhost:3000",
+                                "http://localhost:8080",
+                                "http://localhost:5173"));
 
-        // Allowed methods
-        configuration.setAllowedMethods(Arrays.asList(
-                "GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
+                // Allowed methods
+                configuration.setAllowedMethods(Arrays.asList(
+                                "GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
 
-        // Allowed headers
-        configuration.setAllowedHeaders(Arrays.asList(
-                "Authorization",
-                "Content-Type",
-                "X-Requested-With",
-                "Accept",
-                "Origin",
-                "Access-Control-Request-Method",
-                "Access-Control-Request-Headers"));
+                // Allowed headers
+                configuration.setAllowedHeaders(Arrays.asList(
+                                "Authorization",
+                                "Content-Type",
+                                "X-Requested-With",
+                                "Accept",
+                                "Origin",
+                                "Access-Control-Request-Method",
+                                "Access-Control-Request-Headers"));
 
-        // Exposed headers
-        configuration.setExposedHeaders(Arrays.asList(
-                "Access-Control-Allow-Origin",
-                "Access-Control-Allow-Credentials",
-                "Authorization"));
+                // Exposed headers
+                configuration.setExposedHeaders(Arrays.asList(
+                                "Access-Control-Allow-Origin",
+                                "Access-Control-Allow-Credentials",
+                                "Authorization"));
 
-        // Allow credentials
-        configuration.setAllowCredentials(true);
+                // Allow credentials
+                configuration.setAllowCredentials(true);
 
-        // Max age
-        configuration.setMaxAge(3600L);
+                // Max age
+                configuration.setMaxAge(3600L);
 
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", configuration);
+                UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+                source.registerCorsConfiguration("/**", configuration);
 
-        return source;
-    }
+                return source;
+        }
 }
