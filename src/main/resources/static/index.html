@@ -22,6 +22,13 @@
             color: #333;
             margin-bottom: 30px;
         }
+        h2 {
+            color: #007bff;
+            margin-top: 30px;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #e9ecef;
+        }
         .form-group {
             margin-bottom: 15px;
         }
@@ -31,6 +38,13 @@
             font-weight: bold;
         }
         input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        select {
             width: 100%;
             padding: 10px;
             border: 1px solid #ddd;
@@ -49,6 +63,11 @@
         }
         button:hover {
             background: #0056b3;
+        }
+        small {
+            display: block;
+            margin-top: 5px;
+            font-style: italic;
         }
         .response {
             margin-top: 20px;
@@ -85,7 +104,10 @@
             Student: student_demo / Student@123
         </div>
 
-        <h2>Login Test</h2>
+        <h2>1. Health Check</h2>
+        <button onclick="testHealth()" style="background: #28a745;">Test Health Check</button>
+
+        <h2>2. Login</h2>
         <div class="form-group">
             <label>Username or Email:</label>
             <input type="text" id="username" value="admin">
@@ -95,13 +117,68 @@
             <input type="password" id="password" value="Admin@123">
         </div>
         <button onclick="testLogin()">Login</button>
-        <button onclick="testHealth()" style="background: #28a745;">Health Check</button>
+
+        <h2>3. Get Current User</h2>
+        <button onclick="testGetMe()">Get Current User Info</button>
+        <small style="color: #666;">Requires login first</small>
+
+        <h2>4. Register New User</h2>
+        <div class="form-group">
+            <label>Username:</label>
+            <input type="text" id="regUsername" placeholder="newuser">
+        </div>
+        <div class="form-group">
+            <label>Email:</label>
+            <input type="email" id="regEmail" placeholder="newuser@example.com">
+        </div>
+        <div class="form-group">
+            <label>Password:</label>
+            <input type="password" id="regPassword" placeholder="Password@123">
+        </div>
+        <div class="form-group">
+            <label>First Name:</label>
+            <input type="text" id="regFirstName" placeholder="John">
+        </div>
+        <div class="form-group">
+            <label>Last Name:</label>
+            <input type="text" id="regLastName" placeholder="Doe">
+        </div>
+        <div class="form-group">
+            <label>Role:</label>
+            <select id="regRole">
+                <option value="STUDENT">Student</option>
+                <option value="TEACHER">Teacher</option>
+                <option value="PARENT">Parent</option>
+            </select>
+        </div>
+        <button onclick="testRegister()">Register</button>
+
+        <h2>5. Change Password</h2>
+        <div class="form-group">
+            <label>Current Password:</label>
+            <input type="password" id="currentPassword" placeholder="Admin@123">
+        </div>
+        <div class="form-group">
+            <label>New Password:</label>
+            <input type="password" id="newPassword" placeholder="NewPassword@123">
+        </div>
+        <button onclick="testChangePassword()">Change Password</button>
+        <small style="color: #666;">Requires login first</small>
+
+        <h2>6. Refresh Token</h2>
+        <button onclick="testRefreshToken()">Refresh Token</button>
+        <small style="color: #666;">Requires login first</small>
+
+        <h2>7. Logout</h2>
+        <button onclick="testLogout()" style="background: #dc3545;">Logout</button>
+        <small style="color: #666;">Requires login first</small>
 
         <div id="response"></div>
     </div>
 
     <script>
         const API_BASE = 'http://localhost:8080/api/auth';
+        let currentToken = localStorage.getItem('token');
 
         async function testHealth() {
             try {
@@ -120,9 +197,7 @@
             try {
                 const response = await fetch(`${API_BASE}/login`, {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
+                    headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
                         usernameOrEmail: username,
                         password: password
@@ -133,8 +208,135 @@
                 displayResponse(data, response.ok);
 
                 if (data.success && data.data && data.data.accessToken) {
-                    localStorage.setItem('token', data.data.accessToken);
-                    console.log('Token saved:', data.data.accessToken);
+                    currentToken = data.data.accessToken;
+                    localStorage.setItem('token', currentToken);
+                    console.log('✅ Token saved:', currentToken);
+                }
+            } catch (error) {
+                displayResponse({ error: error.message }, false);
+            }
+        }
+
+        async function testGetMe() {
+            if (!currentToken) {
+                displayResponse({ error: 'Please login first!' }, false);
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE}/me`, {
+                    headers: { 'Authorization': `Bearer ${currentToken}` }
+                });
+
+                const data = await response.json();
+                displayResponse(data, response.ok);
+            } catch (error) {
+                displayResponse({ error: error.message }, false);
+            }
+        }
+
+        async function testRegister() {
+            const regData = {
+                username: document.getElementById('regUsername').value,
+                email: document.getElementById('regEmail').value,
+                password: document.getElementById('regPassword').value,
+                firstName: document.getElementById('regFirstName').value,
+                lastName: document.getElementById('regLastName').value,
+                role: document.getElementById('regRole').value
+            };
+
+            try {
+                const response = await fetch(`${API_BASE}/register`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(regData)
+                });
+
+                const data = await response.json();
+                displayResponse(data, response.ok);
+            } catch (error) {
+                displayResponse({ error: error.message }, false);
+            }
+        }
+
+        async function testChangePassword() {
+            if (!currentToken) {
+                displayResponse({ error: 'Please login first!' }, false);
+                return;
+            }
+
+            const currentPass = document.getElementById('currentPassword').value;
+            const newPass = document.getElementById('newPassword').value;
+
+            try {
+                const response = await fetch(`${API_BASE}/change-password`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${currentToken}`
+                    },
+                    body: JSON.stringify({
+                        currentPassword: currentPass,
+                        newPassword: newPass
+                    })
+                });
+
+                const data = await response.json();
+                displayResponse(data, response.ok);
+            } catch (error) {
+                displayResponse({ error: error.message }, false);
+            }
+        }
+
+        async function testRefreshToken() {
+            const refreshToken = localStorage.getItem('refreshToken');
+            if (!refreshToken && !currentToken) {
+                displayResponse({ error: 'Please login first to get a refresh token!' }, false);
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE}/refresh`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        refreshToken: refreshToken || currentToken
+                    })
+                });
+
+                const data = await response.json();
+                displayResponse(data, response.ok);
+
+                if (data.success && data.data && data.data.accessToken) {
+                    currentToken = data.data.accessToken;
+                    localStorage.setItem('token', currentToken);
+                    console.log('✅ Token refreshed');
+                }
+            } catch (error) {
+                displayResponse({ error: error.message }, false);
+            }
+        }
+
+        async function testLogout() {
+            if (!currentToken) {
+                displayResponse({ error: 'Please login first!' }, false);
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE}/logout`, {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${currentToken}` }
+                });
+
+                const data = await response.json();
+                displayResponse(data, response.ok);
+
+                if (data.success) {
+                    currentToken = null;
+                    localStorage.removeItem('token');
+                    localStorage.removeItem('refreshToken');
+                    console.log('✅ Logged out successfully');
                 }
             } catch (error) {
                 displayResponse({ error: error.message }, false);
@@ -145,7 +347,15 @@
             const responseDiv = document.getElementById('response');
             responseDiv.className = 'response ' + (isSuccess ? 'success' : 'error');
             responseDiv.textContent = JSON.stringify(data, null, 2);
+            responseDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
         }
+
+        // Load token on page load
+        window.onload = function() {
+            if (currentToken) {
+                console.log('✅ Token loaded from localStorage');
+            }
+        };
     </script>
 </body>
 </html>

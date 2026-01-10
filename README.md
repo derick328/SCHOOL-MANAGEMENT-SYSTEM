@@ -239,3 +239,26 @@ PARENT      → Child's academic information
 2026-01-10 16:28:59 - ========================================
 2026-01-10 16:28:59 - ≡ƒÄô School Management System Ready!
 2026-01-10 16:28:59 - ========================================
+
+Default Users in Your System:
+1. ADMIN User
+Username: admin
+Password: Admin@123
+Email: admin@school.com
+Role: ADMIN
+Name: Admin User
+Phone: +1234567890
+2. TEACHER User
+Username: teacher_demo
+Password: Teacher@123
+Email: teacher@school.com
+Role: TEACHER
+Name: Demo Teacher
+Phone: +1234567891
+3. STUDENT User
+Username: student_demo
+Password: Student@123
+Email: student@school.com
+Role: STUDENT
+Name: Demo Student
+Phone: +1234567892
