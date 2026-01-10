@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome - School Management System</title>
+    <link rel="stylesheet" href="/css/styles.css">
+    <style>
+        .hero {
+            text-align: center;
+            color: white;
+            padding: 60px 20px;
+        }
+        .hero h1 {
+            font-size: 48px;
+            margin-bottom: 20px;
+        }
+        .hero p {
+            font-size: 20px;
+            margin-bottom: 40px;
+        }
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+        .feature-card {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        .feature-icon {
+            font-size: 48px;
+            margin-bottom: 20px;
+        }
+        .feature-card h3 {
+            color: var(--primary);
+            margin-bottom: 15px;
+        }
+        .cta-button {
+            display: inline-block;
+            padding: 15px 40px;
+            background: white;
+            color: var(--primary);
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 18px;
+            transition: all 0.3s;
+        }
+        .cta-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+        }
+    </style>
+</head>
+<body>
+    <div class="hero">
+        <h1>🎓 School Management System</h1>
+        <p>Comprehensive, Secure, and Efficient School Administration</p>
+        <a href="/login.html" class="cta-button">Sign In to Your Account</a>
+    </div>
+
+    <div class="features">
+        <div class="feature-card">
+            <div class="feature-icon">👨‍🎓</div>
+            <h3>Student Management</h3>
+            <p>Complete student information management, enrollment, and tracking system.</p>
+        </div>
+
+        <div class="feature-card">
+            <div class="feature-icon">👨‍🏫</div>
+            <h3>Teacher Portal</h3>
+            <p>Manage classes, attendance, grades, and assignments efficiently.</p>
+        </div>
+
+        <div class="feature-card">
+            <div class="feature-icon">📋</div>
+            <h3>Attendance Tracking</h3>
+            <p>Digital attendance system with real-time reports and analytics.</p>
+        </div>
+
+        <div class="feature-card">
+            <div class="feature-icon">📝</div>
+            <h3>Exam Management</h3>
+            <p>Create exams, enter marks, generate report cards automatically.</p>
+        </div>
+
+        <div class="feature-card">
+            <div class="feature-icon">💰</div>
+            <h3>Fee Management</h3>
+            <p>Streamline fee collection, payment tracking, and receipt generation.</p>
+        </div>
+
+        <div class="feature-card">
+            <div class="feature-icon">🔒</div>
+            <h3>Secure Access</h3>
+            <p>Role-based authentication with JWT tokens and data encryption.</p>
+        </div>
+    </div>
+
+    <div style="text-align: center; padding: 40px 20px; background: white; margin-top: 40px;">
+        <h3 style="color: var(--dark); margin-bottom: 20px;">Demo Accounts Available</h3>
+        <div style="display: flex; justify-content: center; gap: 30px; flex-wrap: wrap; color: var(--dark);">
+            <div>
+                <strong>Admin:</strong> admin / Admin@123
+            </div>
+            <div>
+                <strong>Teacher:</strong> teacher_demo / Teacher@123
+            </div>
+            <div>
+                <strong>Student:</strong> student_demo / Student@123
+            </div>
+        </div>
+    </div>
+
+    <script src="/js/app.js"></script>
+    <script>
+        // Redirect if already logged in
+        if (Auth.isAuthenticated()) {
+            const role = Auth.getRole();
+            if (role) {
+                window.location.href = `/${role.toLowerCase()}-dashboard.html`;
+            }
+        }
+    </script>
+</body>
+</html>

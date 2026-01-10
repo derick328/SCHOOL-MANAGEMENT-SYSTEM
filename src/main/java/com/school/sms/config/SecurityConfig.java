@@ -97,6 +97,7 @@ public class SecurityConfig {
                                                                 "/api/public/**",
                                                                 "/",
                                                                 "/index.html",
+                                                                "/home.html",
                                                                 "/login.html",
                                                                 "/login",
                                                                 "/register",
