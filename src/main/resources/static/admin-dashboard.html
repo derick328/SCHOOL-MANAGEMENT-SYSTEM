@@ -445,10 +445,6 @@
                     <form id="addTeacherForm" onsubmit="event.preventDefault(); submitTeacher();">
                         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
                             <div>
-                                <label>Employee ID *</label>
-                                <input type="text" name="employeeId" required style="width: 100%; padding: 8px; border: 2px solid var(--border); border-radius: 8px;">
-                            </div>
-                            <div>
                                 <label>Email *</label>
                                 <input type="email" name="email" required style="width: 100%; padding: 8px; border: 2px solid var(--border); border-radius: 8px;">
                             </div>
@@ -568,8 +564,8 @@
                         <form id="editTeacherForm" onsubmit="event.preventDefault(); submitTeacherUpdate(${id});">
                             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
                                 <div>
-                                    <label>Employee ID *</label>
-                                    <input type="text" name="employeeId" value="${teacher.employeeId || ''}" required style="width: 100%; padding: 8px; border: 2px solid var(--border); border-radius: 8px;">
+                                    <label>Employee ID</label>
+                                    <input type="text" value="${teacher.employeeId || ''}" disabled style="width: 100%; padding: 8px; border: 2px solid var(--border); border-radius: 8px; background: #f5f5f5;">
                                 </div>
                                 <div>
                                     <label>Email *</label>

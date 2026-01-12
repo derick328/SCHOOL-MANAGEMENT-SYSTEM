@@ -33,4 +33,7 @@ public interface TeacherRepository extends JpaRepository<Teacher, Long> {
     boolean existsByEmployeeId(String employeeId);
 
     boolean existsByEmail(String email);
+
+    @Query("SELECT MAX(CAST(SUBSTRING(t.employeeId, 4) AS int)) FROM Teacher t WHERE t.employeeId LIKE 'EMP%'")
+    Integer findMaxEmployeeIdNumber();
 }

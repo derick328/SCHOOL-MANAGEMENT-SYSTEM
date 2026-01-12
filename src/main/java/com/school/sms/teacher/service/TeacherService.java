@@ -32,12 +32,11 @@ public class TeacherService {
 
     @Transactional
     public TeacherResponse createTeacher(TeacherRequest request) {
-        log.info("Creating new teacher with employee ID: {}", request.getEmployeeId());
+        log.info("Creating new teacher");
 
-        // Check if employee ID already exists
-        if (teacherRepository.existsByEmployeeId(request.getEmployeeId())) {
-            throw new BadRequestException("Employee ID already exists");
-        }
+        // Auto-generate employee ID
+        String employeeId = generateEmployeeId();
+        log.info("Generated employee ID: {}", employeeId);
 
         // Check if email already exists
         if (teacherRepository.existsByEmail(request.getEmail())) {
@@ -73,7 +72,7 @@ public class TeacherService {
         // Create teacher
         Teacher teacher = Teacher.builder()
                 .user(user)
-                .employeeId(request.getEmployeeId())
+                .employeeId(employeeId)
                 .firstName(request.getFirstName())
                 .lastName(request.getLastName())
                 .email(request.getEmail())
@@ -105,11 +104,7 @@ public class TeacherService {
         Teacher teacher = teacherRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Teacher not found"));
 
-        // Check if employee ID is being changed and if it already exists
-        if (!teacher.getEmployeeId().equals(request.getEmployeeId())
-                && teacherRepository.existsByEmployeeId(request.getEmployeeId())) {
-            throw new BadRequestException("Employee ID already exists");
-        }
+        // Employee ID cannot be changed after creation - it's auto-generated
 
         // Check if email is being changed and if it already exists
         if (!teacher.getEmail().equals(request.getEmail())
@@ -117,8 +112,7 @@ public class TeacherService {
             throw new BadRequestException("Email already exists");
         }
 
-        // Update teacher fields
-        teacher.setEmployeeId(request.getEmployeeId());
+        // Update teacher fields (excluding employeeId which is immutable)
         teacher.setFirstName(request.getFirstName());
         teacher.setLastName(request.getLastName());
         teacher.setEmail(request.getEmail());
@@ -204,5 +198,11 @@ public class TeacherService {
                 .createdAt(teacher.getCreatedAt())
                 .updatedAt(teacher.getUpdatedAt())
                 .build();
+    }
+
+    private String generateEmployeeId() {
+        Integer maxNumber = teacherRepository.findMaxEmployeeIdNumber();
+        int nextNumber = (maxNumber == null) ? 1 : maxNumber + 1;
+        return String.format("EMP%03d", nextNumber);
     }
 }

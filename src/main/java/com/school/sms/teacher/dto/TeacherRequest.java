@@ -20,9 +20,7 @@ public class TeacherRequest {
 
     private Long userId; // Link to existing user or create new one
 
-    @NotBlank(message = "Employee ID is required")
-    @Size(max = 20, message = "Employee ID must not exceed 20 characters")
-    private String employeeId;
+    // Employee ID will be auto-generated
 
     @NotBlank(message = "First name is required")
     @Size(max = 50, message = "First name must not exceed 50 characters")
