@@ -99,7 +99,7 @@ public class UserManagementService {
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
         user.setActive(true);
-        user.setAccountLocked(false);
+        user.setAccountLockedUntil(null);
         user.setFailedLoginAttempts(0);
         userRepository.save(user);
 
@@ -126,7 +126,7 @@ public class UserManagementService {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
-        user.setAccountLocked(false);
+        user.setAccountLockedUntil(null);
         user.setFailedLoginAttempts(0);
         userRepository.save(user);
 
@@ -156,9 +156,9 @@ public class UserManagementService {
                 .role(user.getRole())
                 .active(user.getActive())
                 .emailVerified(user.getEmailVerified())
-                .lastLogin(user.getLastLogin())
+                .lastLogin(user.getLastLoginAt())
                 .failedLoginAttempts(user.getFailedLoginAttempts())
-                .accountLocked(user.getAccountLocked())
+                .accountLocked(user.isAccountLocked())
                 .createdAt(user.getCreatedAt())
                 .updatedAt(user.getUpdatedAt())
                 .build();

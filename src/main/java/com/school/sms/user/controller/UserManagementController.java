@@ -1,6 +1,6 @@
 package com.school.sms.user.controller;
 
-import com.school.sms.common.ApiResponse;
+import com.school.sms.common.dto.ApiResponse;
 import com.school.sms.user.dto.UserResponse;
 import com.school.sms.user.dto.UserUpdateRequest;
 import com.school.sms.common.enums.Role;
@@ -39,14 +39,14 @@ public class UserManagementController {
             users = userManagementService.getAllUsers();
         }
 
-        return ResponseEntity.ok(ApiResponse.success(users,
-                "Users retrieved successfully (" + users.size() + " found)"));
+        return ResponseEntity.ok(ApiResponse.success(
+                "Users retrieved successfully (" + users.size() + " found)", users));
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<ApiResponse<UserResponse>> getUser(@PathVariable Long id) {
         UserResponse user = userManagementService.getUser(id);
-        return ResponseEntity.ok(ApiResponse.success(user, "User retrieved successfully"));
+        return ResponseEntity.ok(ApiResponse.success("User retrieved successfully", user));
     }
 
     @PutMapping("/{id}")
@@ -54,30 +54,30 @@ public class UserManagementController {
             @PathVariable Long id,
             @Valid @RequestBody UserUpdateRequest request) {
         UserResponse user = userManagementService.updateUser(id, request);
-        return ResponseEntity.ok(ApiResponse.success(user, "User updated successfully"));
+        return ResponseEntity.ok(ApiResponse.success("User updated successfully", user));
     }
 
     @PostMapping("/{id}/activate")
     public ResponseEntity<ApiResponse<Void>> activateUser(@PathVariable Long id) {
         userManagementService.activateUser(id);
-        return ResponseEntity.ok(ApiResponse.success(null, "User activated successfully"));
+        return ResponseEntity.ok(ApiResponse.success("User activated successfully", null));
     }
 
     @PostMapping("/{id}/deactivate")
     public ResponseEntity<ApiResponse<Void>> deactivateUser(@PathVariable Long id) {
         userManagementService.deactivateUser(id);
-        return ResponseEntity.ok(ApiResponse.success(null, "User deactivated successfully"));
+        return ResponseEntity.ok(ApiResponse.success("User deactivated successfully", null));
     }
 
     @PostMapping("/{id}/unlock")
     public ResponseEntity<ApiResponse<Void>> unlockUser(@PathVariable Long id) {
         userManagementService.unlockUser(id);
-        return ResponseEntity.ok(ApiResponse.success(null, "User unlocked successfully"));
+        return ResponseEntity.ok(ApiResponse.success("User unlocked successfully", null));
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<ApiResponse<Void>> deleteUser(@PathVariable Long id) {
         userManagementService.deleteUser(id);
-        return ResponseEntity.ok(ApiResponse.success(null, "User deleted successfully"));
+        return ResponseEntity.ok(ApiResponse.success("User deleted successfully", null));
     }
 }

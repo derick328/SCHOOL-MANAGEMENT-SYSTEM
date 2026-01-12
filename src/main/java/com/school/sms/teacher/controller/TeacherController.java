@@ -1,6 +1,6 @@
 package com.school.sms.teacher.controller;
 
-import com.school.sms.common.ApiResponse;
+import com.school.sms.common.dto.ApiResponse;
 import com.school.sms.teacher.dto.TeacherRequest;
 import com.school.sms.teacher.dto.TeacherResponse;
 import com.school.sms.teacher.entity.Teacher;
@@ -30,7 +30,7 @@ public class TeacherController {
             @Valid @RequestBody TeacherRequest request) {
         TeacherResponse teacher = teacherService.createTeacher(request);
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(ApiResponse.success(teacher, "Teacher created successfully"));
+                .body(ApiResponse.success("Teacher created successfully", teacher));
     }
 
     @PutMapping("/{id}")
@@ -38,13 +38,13 @@ public class TeacherController {
             @PathVariable Long id,
             @Valid @RequestBody TeacherRequest request) {
         TeacherResponse teacher = teacherService.updateTeacher(id, request);
-        return ResponseEntity.ok(ApiResponse.success(teacher, "Teacher updated successfully"));
+        return ResponseEntity.ok(ApiResponse.success("Teacher updated successfully", teacher));
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<ApiResponse<TeacherResponse>> getTeacher(@PathVariable Long id) {
         TeacherResponse teacher = teacherService.getTeacher(id);
-        return ResponseEntity.ok(ApiResponse.success(teacher, "Teacher retrieved successfully"));
+        return ResponseEntity.ok(ApiResponse.success("Teacher retrieved successfully", teacher));
     }
 
     @GetMapping
@@ -62,13 +62,13 @@ public class TeacherController {
             teachers = teacherService.getAllTeachers();
         }
 
-        return ResponseEntity.ok(ApiResponse.success(teachers,
-                "Teachers retrieved successfully (" + teachers.size() + " found)"));
+        return ResponseEntity.ok(ApiResponse.success(
+                "Teachers retrieved successfully (" + teachers.size() + " found)", teachers));
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<ApiResponse<Void>> deleteTeacher(@PathVariable Long id) {
         teacherService.deleteTeacher(id);
-        return ResponseEntity.ok(ApiResponse.success(null, "Teacher deleted successfully"));
+        return ResponseEntity.ok(ApiResponse.success("Teacher deleted successfully", null));
     }
 }
