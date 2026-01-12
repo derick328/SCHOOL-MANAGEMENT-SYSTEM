@@ -1,7 +1,7 @@
 package com.school.sms.teacher.entity;
 
 import com.school.sms.common.BaseEntity;
-import com.school.sms.user.entity.User;
+import com.school.sms.auth.entity.User;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;

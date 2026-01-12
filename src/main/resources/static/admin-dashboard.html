@@ -170,14 +170,38 @@
                     <div class="table-container">
                         <div class="table-header">
                             <h3>Teacher Management</h3>
-                            <button class="btn btn-primary btn-sm" onclick="showAddTeacherModal()">
-                                + Add Teacher
-                            </button>
+                            <div style="display: flex; gap: 10px;">
+                                <input type="text" id="teacherSearch" placeholder="Search teachers..." 
+                                       style="padding: 8px; border: 2px solid var(--border); border-radius: 8px; width: 250px;">
+                                <button class="btn btn-primary btn-sm" onclick="searchTeachers()">
+                                    Search
+                                </button>
+                                <button class="btn btn-primary btn-sm" onclick="showAddTeacherModal()">
+                                    + Add Teacher
+                                </button>
+                            </div>
                         </div>
                         <table>
                             <thead>
                                 <tr>
-                                    <th>ID</th>
+                                    <th>Employee ID</th>
+                                    <th>Name</th>
+                                    <th>Email</th>
+                                    <th>Subjects</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="teachersTable">
+                                <tr>
+                                    <td colspan="6" style="text-align: center; padding: 40px;">
+                                        <div class="spinner"></div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
                                     <th>Name</th>
                                     <th>Email</th>
                                     <th>Subject</th>
@@ -234,8 +258,43 @@
 
                 <div id="usersSection" style="display: none;">
                     <div class="table-container">
-                        <h3>User Management</h3>
-                        <p style="color: var(--secondary); padding: 20px;">User management module coming soon...</p>
+                        <div class="table-header">
+                            <h3>User Management</h3>
+                            <div style="display: flex; gap: 10px;">
+                                <input type="text" id="userSearch" placeholder="Search users..." 
+                                       style="padding: 8px; border: 2px solid var(--border); border-radius: 8px; width: 250px;">
+                                <select id="roleFilter" style="padding: 8px; border: 2px solid var(--border); border-radius: 8px;">
+                                    <option value="">All Roles</option>
+                                    <option value="ADMIN">Admin</option>
+                                    <option value="TEACHER">Teacher</option>
+                                    <option value="STUDENT">Student</option>
+                                    <option value="PARENT">Parent</option>
+                                </select>
+                                <button class="btn btn-primary btn-sm" onclick="searchUsers()">
+                                    Search
+                                </button>
+                            </div>
+                        </div>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Username</th>
+                                    <th>Name</th>
+                                    <th>Email</th>
+                                    <th>Role</th>
+                                    <th>Status</th>
+                                    <th>Last Login</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="usersTable">
+                                <tr>
+                                    <td colspan="7" style="text-align: center; padding: 40px;">
+                                        <div class="spinner"></div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </div>
@@ -272,6 +331,13 @@
                 users: 'User Management'
             };
             document.getElementById('pageTitle').textContent = titles[section];
+            
+            // Load data for specific sections
+            if (section === 'teachers') {
+                loadTeachers();
+            } else if (section === 'users') {
+                loadUsers();
+            }
         }
 
         // Load dashboard data
@@ -297,13 +363,587 @@
             }
         }
 
-        // Placeholder functions
-        function showAddStudentModal() {
-            UI.showAlert('Student creation form will be implemented with backend API', 'info');
+        // ==================== TEACHERS MANAGEMENT ====================
+        
+        // Load all teachers
+        async function loadTeachers() {
+            try {
+                const response = await API.request('/api/admin/teachers');
+                displayTeachersTable(response.data);
+            } catch (error) {
+                console.error('Error loading teachers:', error);
+                UI.showAlert('Failed to load teachers', 'error');
+            }
+        }
+        
+        // Search teachers
+        async function searchTeachers() {
+            try {
+                const search = document.getElementById('teacherSearch').value;
+                const status = document.getElementById('statusFilter').value;
+                
+                let url = '/api/admin/teachers?';
+                if (search) url += `search=${encodeURIComponent(search)}&`;
+                if (status) url += `status=${status}`;
+                
+                const response = await API.request(url);
+                displayTeachersTable(response.data);
+            } catch (error) {
+                console.error('Error searching teachers:', error);
+                UI.showAlert('Search failed', 'error');
+            }
+        }
+        
+        // Display teachers in table
+        function displayTeachersTable(teachers) {
+            const tbody = document.getElementById('teachersTable');
+            
+            if (!teachers || teachers.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="6" style="text-align: center; padding: 40px; color: var(--secondary);">
+                            No teachers found
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+            
+            tbody.innerHTML = teachers.map(teacher => `
+                <tr>
+                    <td>${teacher.employeeId || 'N/A'}</td>
+                    <td>${teacher.firstName} ${teacher.lastName}</td>
+                    <td>${teacher.email}</td>
+                    <td>${teacher.subjects || 'Not assigned'}</td>
+                    <td>
+                        <span class="badge ${teacher.employmentStatus === 'ACTIVE' ? 'badge-success' : 'badge-warning'}">
+                            ${teacher.employmentStatus}
+                        </span>
+                    </td>
+                    <td>
+                        <button class="btn btn-sm btn-primary" onclick="editTeacher(${teacher.id})" style="margin-right: 5px;">
+                            Edit
+                        </button>
+                        <button class="btn btn-sm btn-danger" onclick="deleteTeacher(${teacher.id})">
+                            Delete
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+        
+        // Show add teacher modal
+        function showAddTeacherModal() {
+            const modal = document.createElement('div');
+            modal.className = 'modal';
+            modal.innerHTML = `
+                <div class="modal-content" style="max-width: 600px; max-height: 90vh; overflow-y: auto;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                        <h3>Add New Teacher</h3>
+                        <button onclick="this.closest('.modal').remove()" style="border: none; background: none; font-size: 24px; cursor: pointer;">&times;</button>
+                    </div>
+                    <form id="addTeacherForm" onsubmit="event.preventDefault(); submitTeacher();">
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                            <div>
+                                <label>Employee ID *</label>
+                                <input type="text" name="employeeId" required style="width: 100%; padding: 8px; border: 2px solid var(--border); border-radius: 8px;">
+                            </div>
+                            <div>
+                                <label>Email *</label>
+                                <input type="email" name="email" required style="width: 100%; padding: 8px; border: 2px solid var(--border); border-radius: 8px;">
+                            </div>
+                            <div>
+                                <label>First Name *</label>
+                                <input type="text" name="firstName" required style="width: 100%; padding: 8px; border: 2px solid var(--border); border-radius: 8px;">
+                            </div>
+                            <div>
+                                <label>Last Name *</label>
+                                <input type="text" name="lastName" required style="width: 100%; padding: 8px; border: 2px solid var(--border); border-radius: 8px;">
+                            </div>
+                            <div>
+                                <label>Phone</label>
+                                <input type="tel" name="phone" style="width: 100%; padding: 8px; border: 2px solid var(--border); border-radius: 8px;">
+                            </div>
+                            <div>
+                                <label>Date of Birth</label>
+                                <input type="date" name="dateOfBirth" style="width: 100%; padding: 8px; border: 2px solid var(--border); border-radius: 8px;">
+                            </div>
+                            <div>
+                                <label>Gender</label>
+                                <select name="gender" style="width: 100%; padding: 8px; border: 2px solid var(--border); border-radius: 8px;">
+                                    <option value="">Select</option>
+                                    <option value="MALE">Male</option>
+                                    <option value="FEMALE">Female</option>
+                                    <option value="OTHER">Other</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label>Qualification</label>
+                                <input type="text" name="qualification" placeholder="e.g., B.Ed, M.Sc" style="width: 100%; padding: 8px; border: 2px solid var(--border); border-radius: 8px;">
+                            </div>
+                            <div>
+                                <label>Specialization</label>
+                                <input type="text" name="specialization" placeholder="e.g., Mathematics" style="width: 100%; padding: 8px; border: 2px solid var(--border); border-radius: 8px;">
+                            </div>
+                            <div>
+                                <label>Experience (Years)</label>
+                                <input type="number" name="experienceYears" min="0" style="width: 100%; padding: 8px; border: 2px solid var(--border); border-radius: 8px;">
+                            </div>
+                            <div>
+                                <label>Joining Date</label>
+                                <input type="date" name="joiningDate" style="width: 100%; padding: 8px; border: 2px solid var(--border); border-radius: 8px;">
+                            </div>
+                            <div>
+                                <label>Salary</label>
+                                <input type="number" name="salary" min="0" step="0.01" style="width: 100%; padding: 8px; border: 2px solid var(--border); border-radius: 8px;">
+                            </div>
+                            <div style="grid-column: 1 / -1;">
+                                <label>Address</label>
+                                <textarea name="address" rows="2" style="width: 100%; padding: 8px; border: 2px solid var(--border); border-radius: 8px;"></textarea>
+                            </div>
+                            <div style="grid-column: 1 / -1;">
+                                <label>Subjects (comma separated)</label>
+                                <input type="text" name="subjects" placeholder="e.g., Mathematics, Physics" style="width: 100%; padding: 8px; border: 2px solid var(--border); border-radius: 8px;">
+                            </div>
+                            <div>
+                                <label>Username *</label>
+                                <input type="text" name="username" required style="width: 100%; padding: 8px; border: 2px solid var(--border); border-radius: 8px;">
+                            </div>
+                            <div>
+                                <label>Password *</label>
+                                <input type="password" name="password" required minlength="6" style="width: 100%; padding: 8px; border: 2px solid var(--border); border-radius: 8px;">
+                            </div>
+                        </div>
+                        <div style="margin-top: 20px; display: flex; gap: 10px; justify-content: flex-end;">
+                            <button type="button" class="btn btn-secondary" onclick="this.closest('.modal').remove()">Cancel</button>
+                            <button type="submit" class="btn btn-primary">Create Teacher</button>
+                        </div>
+                    </form>
+                </div>
+            `;
+            document.body.appendChild(modal);
+        }
+        
+        // Submit new teacher
+        async function submitTeacher() {
+            const form = document.getElementById('addTeacherForm');
+            const formData = new FormData(form);
+            const data = {};
+            
+            formData.forEach((value, key) => {
+                if (value) data[key] = value;
+            });
+            
+            try {
+                await API.request('/api/admin/teachers', {
+                    method: 'POST',
+                    body: JSON.stringify(data)
+                });
+                
+                UI.showAlert('Teacher created successfully', 'success');
+                document.querySelector('.modal').remove();
+                loadTeachers();
+            } catch (error) {
+                console.error('Error creating teacher:', error);
+                UI.showAlert(error.message || 'Failed to create teacher', 'error');
+            }
+        }
+        
+        // Edit teacher
+        async function editTeacher(id) {
+            try {
+                // Get teacher data
+                const response = await API.request(`/api/admin/teachers/${id}`);
+                const teacher = response.data;
+                
+                // Create edit modal
+                const modal = document.createElement('div');
+                modal.className = 'modal';
+                modal.innerHTML = `
+                    <div class="modal-content" style="max-width: 600px; max-height: 90vh; overflow-y: auto;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                            <h3>Edit Teacher</h3>
+                            <button onclick="this.closest('.modal').remove()" style="border: none; background: none; font-size: 24px; cursor: pointer;">&times;</button>
+                        </div>
+                        <form id="editTeacherForm" onsubmit="event.preventDefault(); submitTeacherUpdate(${id});">
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                                <div>
+                                    <label>Employee ID *</label>
+                                    <input type="text" name="employeeId" value="${teacher.employeeId || ''}" required style="width: 100%; padding: 8px; border: 2px solid var(--border); border-radius: 8px;">
+                                </div>
+                                <div>
+                                    <label>Email *</label>
+                                    <input type="email" name="email" value="${teacher.email || ''}" required style="width: 100%; padding: 8px; border: 2px solid var(--border); border-radius: 8px;">
+                                </div>
+                                <div>
+                                    <label>First Name *</label>
+                                    <input type="text" name="firstName" value="${teacher.firstName || ''}" required style="width: 100%; padding: 8px; border: 2px solid var(--border); border-radius: 8px;">
+                                </div>
+                                <div>
+                                    <label>Last Name *</label>
+                                    <input type="text" name="lastName" value="${teacher.lastName || ''}" required style="width: 100%; padding: 8px; border: 2px solid var(--border); border-radius: 8px;">
+                                </div>
+                                <div>
+                                    <label>Phone</label>
+                                    <input type="tel" name="phone" value="${teacher.phone || ''}" style="width: 100%; padding: 8px; border: 2px solid var(--border); border-radius: 8px;">
+                                </div>
+                                <div>
+                                    <label>Date of Birth</label>
+                                    <input type="date" name="dateOfBirth" value="${teacher.dateOfBirth || ''}" style="width: 100%; padding: 8px; border: 2px solid var(--border); border-radius: 8px;">
+                                </div>
+                                <div>
+                                    <label>Gender</label>
+                                    <select name="gender" style="width: 100%; padding: 8px; border: 2px solid var(--border); border-radius: 8px;">
+                                        <option value="">Select</option>
+                                        <option value="MALE" ${teacher.gender === 'MALE' ? 'selected' : ''}>Male</option>
+                                        <option value="FEMALE" ${teacher.gender === 'FEMALE' ? 'selected' : ''}>Female</option>
+                                        <option value="OTHER" ${teacher.gender === 'OTHER' ? 'selected' : ''}>Other</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label>Qualification</label>
+                                    <input type="text" name="qualification" value="${teacher.qualification || ''}" style="width: 100%; padding: 8px; border: 2px solid var(--border); border-radius: 8px;">
+                                </div>
+                                <div>
+                                    <label>Specialization</label>
+                                    <input type="text" name="specialization" value="${teacher.specialization || ''}" style="width: 100%; padding: 8px; border: 2px solid var(--border); border-radius: 8px;">
+                                </div>
+                                <div>
+                                    <label>Experience (Years)</label>
+                                    <input type="number" name="experienceYears" value="${teacher.experienceYears || ''}" min="0" style="width: 100%; padding: 8px; border: 2px solid var(--border); border-radius: 8px;">
+                                </div>
+                                <div>
+                                    <label>Joining Date</label>
+                                    <input type="date" name="joiningDate" value="${teacher.joiningDate || ''}" style="width: 100%; padding: 8px; border: 2px solid var(--border); border-radius: 8px;">
+                                </div>
+                                <div>
+                                    <label>Salary</label>
+                                    <input type="number" name="salary" value="${teacher.salary || ''}" min="0" step="0.01" style="width: 100%; padding: 8px; border: 2px solid var(--border); border-radius: 8px;">
+                                </div>
+                                <div>
+                                    <label>Employment Status</label>
+                                    <select name="employmentStatus" style="width: 100%; padding: 8px; border: 2px solid var(--border); border-radius: 8px;">
+                                        <option value="ACTIVE" ${teacher.employmentStatus === 'ACTIVE' ? 'selected' : ''}>Active</option>
+                                        <option value="ON_LEAVE" ${teacher.employmentStatus === 'ON_LEAVE' ? 'selected' : ''}>On Leave</option>
+                                        <option value="RESIGNED" ${teacher.employmentStatus === 'RESIGNED' ? 'selected' : ''}>Resigned</option>
+                                        <option value="TERMINATED" ${teacher.employmentStatus === 'TERMINATED' ? 'selected' : ''}>Terminated</option>
+                                    </select>
+                                </div>
+                                <div style="grid-column: 1 / -1;">
+                                    <label>Address</label>
+                                    <textarea name="address" rows="2" style="width: 100%; padding: 8px; border: 2px solid var(--border); border-radius: 8px;">${teacher.address || ''}</textarea>
+                                </div>
+                                <div style="grid-column: 1 / -1;">
+                                    <label>Subjects (comma separated)</label>
+                                    <input type="text" name="subjects" value="${teacher.subjects || ''}" style="width: 100%; padding: 8px; border: 2px solid var(--border); border-radius: 8px;">
+                                </div>
+                            </div>
+                            <div style="margin-top: 20px; display: flex; gap: 10px; justify-content: flex-end;">
+                                <button type="button" class="btn btn-secondary" onclick="this.closest('.modal').remove()">Cancel</button>
+                                <button type="submit" class="btn btn-primary">Update Teacher</button>
+                            </div>
+                        </form>
+                    </div>
+                `;
+                document.body.appendChild(modal);
+            } catch (error) {
+                console.error('Error loading teacher:', error);
+                UI.showAlert('Failed to load teacher data', 'error');
+            }
+        }
+        
+        // Submit teacher update
+        async function submitTeacherUpdate(id) {
+            const form = document.getElementById('editTeacherForm');
+            const formData = new FormData(form);
+            const data = {};
+            
+            formData.forEach((value, key) => {
+                if (value) data[key] = value;
+            });
+            
+            try {
+                await API.request(`/api/admin/teachers/${id}`, {
+                    method: 'PUT',
+                    body: JSON.stringify(data)
+                });
+                
+                UI.showAlert('Teacher updated successfully', 'success');
+                document.querySelector('.modal').remove();
+                loadTeachers();
+            } catch (error) {
+                console.error('Error updating teacher:', error);
+                UI.showAlert(error.message || 'Failed to update teacher', 'error');
+            }
+        }
+        
+        // Delete teacher
+        async function deleteTeacher(id) {
+            if (!confirm('Are you sure you want to delete this teacher? This action cannot be undone.')) {
+                return;
+            }
+            
+            try {
+                await API.request(`/api/admin/teachers/${id}`, {
+                    method: 'DELETE'
+                });
+                
+                UI.showAlert('Teacher deleted successfully', 'success');
+                loadTeachers();
+            } catch (error) {
+                console.error('Error deleting teacher:', error);
+                UI.showAlert('Failed to delete teacher', 'error');
+            }
         }
 
-        function showAddTeacherModal() {
-            UI.showAlert('Teacher creation form will be implemented with backend API', 'info');
+        // ==================== USER MANAGEMENT ====================
+        
+        // Load all users
+        async function loadUsers() {
+            try {
+                const response = await API.request('/api/admin/users');
+                displayUsersTable(response.data);
+            } catch (error) {
+                console.error('Error loading users:', error);
+                UI.showAlert('Failed to load users', 'error');
+            }
+        }
+        
+        // Search users
+        async function searchUsers() {
+            try {
+                const search = document.getElementById('userSearch').value;
+                const role = document.getElementById('roleFilter').value;
+                
+                let url = '/api/admin/users?';
+                if (search) url += `search=${encodeURIComponent(search)}&`;
+                if (role) url += `role=${role}`;
+                
+                const response = await API.request(url);
+                displayUsersTable(response.data);
+            } catch (error) {
+                console.error('Error searching users:', error);
+                UI.showAlert('Search failed', 'error');
+            }
+        }
+        
+        // Display users in table
+        function displayUsersTable(users) {
+            const tbody = document.getElementById('usersTable');
+            
+            if (!users || users.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="7" style="text-align: center; padding: 40px; color: var(--secondary);">
+                            No users found
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+            
+            tbody.innerHTML = users.map(user => `
+                <tr>
+                    <td>${user.username}</td>
+                    <td>${user.firstName || ''} ${user.lastName || ''}</td>
+                    <td>${user.email || 'N/A'}</td>
+                    <td><span class="badge badge-info">${user.role}</span></td>
+                    <td>
+                        <span class="badge ${user.active ? 'badge-success' : 'badge-danger'}">
+                            ${user.active ? 'Active' : 'Inactive'}
+                        </span>
+                        ${user.accountLocked ? '<span class="badge badge-warning" style="margin-left: 5px;">Locked</span>' : ''}
+                    </td>
+                    <td>${user.lastLogin ? new Date(user.lastLogin).toLocaleDateString() : 'Never'}</td>
+                    <td>
+                        <button class="btn btn-sm btn-primary" onclick="editUser(${user.id})" style="margin-right: 5px;">
+                            Edit
+                        </button>
+                        ${user.active ? 
+                            `<button class="btn btn-sm btn-warning" onclick="deactivateUser(${user.id})" style="margin-right: 5px;">Deactivate</button>` :
+                            `<button class="btn btn-sm btn-success" onclick="activateUser(${user.id})" style="margin-right: 5px;">Activate</button>`
+                        }
+                        ${user.accountLocked ? 
+                            `<button class="btn btn-sm btn-info" onclick="unlockUser(${user.id})" style="margin-right: 5px;">Unlock</button>` : ''
+                        }
+                        <button class="btn btn-sm btn-danger" onclick="deleteUser(${user.id})">
+                            Delete
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+        
+        // Edit user
+        async function editUser(id) {
+            try {
+                // Get user data
+                const response = await API.request(`/api/admin/users/${id}`);
+                const user = response.data;
+                
+                // Create edit modal
+                const modal = document.createElement('div');
+                modal.className = 'modal';
+                modal.innerHTML = `
+                    <div class="modal-content" style="max-width: 500px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                            <h3>Edit User</h3>
+                            <button onclick="this.closest('.modal').remove()" style="border: none; background: none; font-size: 24px; cursor: pointer;">&times;</button>
+                        </div>
+                        <form id="editUserForm" onsubmit="event.preventDefault(); submitUserUpdate(${id});">
+                            <div style="display: flex; flex-direction: column; gap: 15px;">
+                                <div>
+                                    <label>Username *</label>
+                                    <input type="text" name="username" value="${user.username}" required style="width: 100%; padding: 8px; border: 2px solid var(--border); border-radius: 8px;">
+                                </div>
+                                <div>
+                                    <label>Email</label>
+                                    <input type="email" name="email" value="${user.email || ''}" style="width: 100%; padding: 8px; border: 2px solid var(--border); border-radius: 8px;">
+                                </div>
+                                <div>
+                                    <label>First Name</label>
+                                    <input type="text" name="firstName" value="${user.firstName || ''}" style="width: 100%; padding: 8px; border: 2px solid var(--border); border-radius: 8px;">
+                                </div>
+                                <div>
+                                    <label>Last Name</label>
+                                    <input type="text" name="lastName" value="${user.lastName || ''}" style="width: 100%; padding: 8px; border: 2px solid var(--border); border-radius: 8px;">
+                                </div>
+                                <div>
+                                    <label>Role</label>
+                                    <select name="role" style="width: 100%; padding: 8px; border: 2px solid var(--border); border-radius: 8px;">
+                                        <option value="ADMIN" ${user.role === 'ADMIN' ? 'selected' : ''}>Admin</option>
+                                        <option value="TEACHER" ${user.role === 'TEACHER' ? 'selected' : ''}>Teacher</option>
+                                        <option value="STUDENT" ${user.role === 'STUDENT' ? 'selected' : ''}>Student</option>
+                                        <option value="PARENT" ${user.role === 'PARENT' ? 'selected' : ''}>Parent</option>
+                                    </select>
+                                </div>
+                                <div style="display: flex; align-items: center; gap: 10px;">
+                                    <input type="checkbox" name="active" id="activeCheckbox" ${user.active ? 'checked' : ''}>
+                                    <label for="activeCheckbox" style="margin: 0;">Active Account</label>
+                                </div>
+                                <div>
+                                    <label>New Password (leave blank to keep current)</label>
+                                    <input type="password" name="password" minlength="6" style="width: 100%; padding: 8px; border: 2px solid var(--border); border-radius: 8px;">
+                                </div>
+                            </div>
+                            <div style="margin-top: 20px; display: flex; gap: 10px; justify-content: flex-end;">
+                                <button type="button" class="btn btn-secondary" onclick="this.closest('.modal').remove()">Cancel</button>
+                                <button type="submit" class="btn btn-primary">Update User</button>
+                            </div>
+                        </form>
+                    </div>
+                `;
+                document.body.appendChild(modal);
+            } catch (error) {
+                console.error('Error loading user:', error);
+                UI.showAlert('Failed to load user data', 'error');
+            }
+        }
+        
+        // Submit user update
+        async function submitUserUpdate(id) {
+            const form = document.getElementById('editUserForm');
+            const formData = new FormData(form);
+            const data = {
+                username: formData.get('username'),
+                email: formData.get('email') || null,
+                firstName: formData.get('firstName') || null,
+                lastName: formData.get('lastName') || null,
+                role: formData.get('role'),
+                active: document.getElementById('activeCheckbox').checked
+            };
+            
+            const password = formData.get('password');
+            if (password) {
+                data.password = password;
+            }
+            
+            try {
+                await API.request(`/api/admin/users/${id}`, {
+                    method: 'PUT',
+                    body: JSON.stringify(data)
+                });
+                
+                UI.showAlert('User updated successfully', 'success');
+                document.querySelector('.modal').remove();
+                loadUsers();
+            } catch (error) {
+                console.error('Error updating user:', error);
+                UI.showAlert(error.message || 'Failed to update user', 'error');
+            }
+        }
+        
+        // Activate user
+        async function activateUser(id) {
+            try {
+                await API.request(`/api/admin/users/${id}/activate`, {
+                    method: 'POST'
+                });
+                
+                UI.showAlert('User activated successfully', 'success');
+                loadUsers();
+            } catch (error) {
+                console.error('Error activating user:', error);
+                UI.showAlert('Failed to activate user', 'error');
+            }
+        }
+        
+        // Deactivate user
+        async function deactivateUser(id) {
+            if (!confirm('Are you sure you want to deactivate this user?')) {
+                return;
+            }
+            
+            try {
+                await API.request(`/api/admin/users/${id}/deactivate`, {
+                    method: 'POST'
+                });
+                
+                UI.showAlert('User deactivated successfully', 'success');
+                loadUsers();
+            } catch (error) {
+                console.error('Error deactivating user:', error);
+                UI.showAlert('Failed to deactivate user', 'error');
+            }
+        }
+        
+        // Unlock user
+        async function unlockUser(id) {
+            try {
+                await API.request(`/api/admin/users/${id}/unlock`, {
+                    method: 'POST'
+                });
+                
+                UI.showAlert('User unlocked successfully', 'success');
+                loadUsers();
+            } catch (error) {
+                console.error('Error unlocking user:', error);
+                UI.showAlert('Failed to unlock user', 'error');
+            }
+        }
+        
+        // Delete user
+        async function deleteUser(id) {
+            if (!confirm('Are you sure you want to delete this user? This action cannot be undone.')) {
+                return;
+            }
+            
+            try {
+                await API.request(`/api/admin/users/${id}`, {
+                    method: 'DELETE'
+                });
+                
+                UI.showAlert('User deleted successfully', 'success');
+                loadUsers();
+            } catch (error) {
+                console.error('Error deleting user:', error);
+                UI.showAlert('Failed to delete user', 'error');
+            }
+        }
+
+        // Placeholder functions for other sections
+        function showAddStudentModal() {
+            UI.showAlert('Student creation form will be implemented with backend API', 'info');
         }
 
         // Load data on page load
