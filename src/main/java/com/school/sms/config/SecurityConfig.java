@@ -99,6 +99,10 @@ public class SecurityConfig {
                                                                 "/index.html",
                                                                 "/home.html",
                                                                 "/login.html",
+                                                                "/admin-dashboard.html",
+                                                                "/teacher-dashboard.html",
+                                                                "/student-dashboard.html",
+                                                                "/parent-dashboard.html",
                                                                 "/login",
                                                                 "/register",
                                                                 "/forgot-password",
@@ -111,19 +115,19 @@ public class SecurityConfig {
                                                                 "/favicon.ico")
                                                 .permitAll()
 
-                                                // Admin endpoints
-                                                .requestMatchers("/api/admin/**", "/admin/**").hasRole("ADMIN")
+                                                // Admin API endpoints
+                                                .requestMatchers("/api/admin/**").hasRole("ADMIN")
 
-                                                // Teacher dashboard
-                                                .requestMatchers("/teacher-dashboard.html", "/api/teacher/**")
+                                                // Teacher API endpoints
+                                                .requestMatchers("/api/teacher/**")
                                                 .hasAnyRole("ADMIN", "TEACHER")
 
-                                                // Student dashboard
-                                                .requestMatchers("/student-dashboard.html", "/api/student/**")
+                                                // Student API endpoints
+                                                .requestMatchers("/api/student/**")
                                                 .hasAnyRole("ADMIN", "TEACHER", "STUDENT")
 
-                                                // Parent dashboard
-                                                .requestMatchers("/parent-dashboard.html", "/api/parent/**")
+                                                // Parent API endpoints
+                                                .requestMatchers("/api/parent/**")
                                                 .hasAnyRole("ADMIN", "PARENT")
 
                                                 // All other requests require authentication
