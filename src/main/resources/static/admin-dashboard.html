@@ -368,7 +368,7 @@
         // Load all teachers
         async function loadTeachers() {
             try {
-                const response = await API.request('/api/admin/teachers');
+                const response = await API.request('/admin/teachers');
                 displayTeachersTable(response.data);
             } catch (error) {
                 console.error('Error loading teachers:', error);
@@ -382,7 +382,7 @@
                 const search = document.getElementById('teacherSearch').value;
                 const status = document.getElementById('statusFilter').value;
                 
-                let url = '/api/admin/teachers?';
+                let url = '/admin/teachers?';
                 if (search) url += `search=${encodeURIComponent(search)}&`;
                 if (status) url += `status=${status}`;
                 
@@ -531,7 +531,7 @@
             });
             
             try {
-                await API.request('/api/admin/teachers', {
+                await API.request('/admin/teachers', {
                     method: 'POST',
                     body: JSON.stringify(data)
                 });
@@ -549,7 +549,7 @@
         async function editTeacher(id) {
             try {
                 // Get teacher data
-                const response = await API.request(`/api/admin/teachers/${id}`);
+                const response = await API.request(`/admin/teachers/${id}`);
                 const teacher = response.data;
                 
                 // Create edit modal
@@ -659,7 +659,7 @@
             });
             
             try {
-                await API.request(`/api/admin/teachers/${id}`, {
+                await API.request(`/admin/teachers/${id}`, {
                     method: 'PUT',
                     body: JSON.stringify(data)
                 });
@@ -680,7 +680,7 @@
             }
             
             try {
-                await API.request(`/api/admin/teachers/${id}`, {
+                await API.request(`/admin/teachers/${id}`, {
                     method: 'DELETE'
                 });
                 
@@ -697,7 +697,7 @@
         // Load all users
         async function loadUsers() {
             try {
-                const response = await API.request('/api/admin/users');
+                const response = await API.request('/admin/users');
                 displayUsersTable(response.data);
             } catch (error) {
                 console.error('Error loading users:', error);
@@ -711,7 +711,7 @@
                 const search = document.getElementById('userSearch').value;
                 const role = document.getElementById('roleFilter').value;
                 
-                let url = '/api/admin/users?';
+                let url = '/admin/users?';
                 if (search) url += `search=${encodeURIComponent(search)}&`;
                 if (role) url += `role=${role}`;
                 
@@ -774,7 +774,7 @@
         async function editUser(id) {
             try {
                 // Get user data
-                const response = await API.request(`/api/admin/users/${id}`);
+                const response = await API.request(`/admin/users/${id}`);
                 const user = response.data;
                 
                 // Create edit modal
@@ -855,7 +855,7 @@
             }
             
             try {
-                await API.request(`/api/admin/users/${id}`, {
+                await API.request(`/admin/users/${id}`, {
                     method: 'PUT',
                     body: JSON.stringify(data)
                 });
@@ -872,7 +872,7 @@
         // Activate user
         async function activateUser(id) {
             try {
-                await API.request(`/api/admin/users/${id}/activate`, {
+                await API.request(`/admin/users/${id}/activate`, {
                     method: 'POST'
                 });
                 
@@ -891,7 +891,7 @@
             }
             
             try {
-                await API.request(`/api/admin/users/${id}/deactivate`, {
+                await API.request(`/admin/users/${id}/deactivate`, {
                     method: 'POST'
                 });
                 
@@ -906,7 +906,7 @@
         // Unlock user
         async function unlockUser(id) {
             try {
-                await API.request(`/api/admin/users/${id}/unlock`, {
+                await API.request(`/admin/users/${id}/unlock`, {
                     method: 'POST'
                 });
                 
@@ -925,7 +925,7 @@
             }
             
             try {
-                await API.request(`/api/admin/users/${id}`, {
+                await API.request(`/admin/users/${id}`, {
                     method: 'DELETE'
                 });
                 

@@ -43,7 +43,7 @@ public class Teacher extends BaseEntity {
     private String email;
 
     @Column(name = "phone", length = 20)
-    @Pattern(regexp = "^[0-9+()-\\s]*$", message = "Invalid phone number format")
+    @Pattern(regexp = "^[0-9+()\\-\\s]*$", message = "Invalid phone number format")
     private String phone;
 
     @Column(name = "date_of_birth")

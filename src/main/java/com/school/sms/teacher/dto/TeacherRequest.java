@@ -35,7 +35,7 @@ public class TeacherRequest {
     @Size(max = 100, message = "Email must not exceed 100 characters")
     private String email;
 
-    @Pattern(regexp = "^[0-9+()-\\s]*$", message = "Invalid phone number format")
+    @Pattern(regexp = "^[0-9+()\\-\\s]*$", message = "Invalid phone number format")
     @Size(max = 20, message = "Phone must not exceed 20 characters")
     private String phone;
 
