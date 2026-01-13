@@ -7,6 +7,8 @@ package com.school.sms.common.enums;
 public enum Role {
     ADMIN("Administrator", "Full system access"),
     TEACHER("Teacher", "Access to teaching resources and student data"),
+    ACADEMIC_TEACHER("Academic Teacher", "Teacher with additional academic management responsibilities"),
+    DISCIPLINE_TEACHER("Discipline Teacher", "Teacher with additional student discipline management responsibilities"),
     STUDENT("Student", "Access to personal academic information"),
     PARENT("Parent", "Access to child's academic information");
 

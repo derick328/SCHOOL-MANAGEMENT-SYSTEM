@@ -50,8 +50,8 @@ public class TeacherRequest {
     @Size(max = 100, message = "Qualification must not exceed 100 characters")
     private String qualification;
 
-    @Size(max = 100, message = "Specialization must not exceed 100 characters")
-    private String specialization;
+    @Size(max = 500, message = "Specialization must not exceed 500 characters")
+    private String specialization; // Comma-separated list of specializations
 
     @Min(value = 0, message = "Experience years must be positive")
     @Max(value = 50, message = "Experience years must not exceed 50")

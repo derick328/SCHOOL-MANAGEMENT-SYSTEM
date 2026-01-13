@@ -59,8 +59,8 @@ public class Teacher extends BaseEntity {
     @Column(name = "qualification", length = 100)
     private String qualification;
 
-    @Column(name = "specialization", length = 100)
-    private String specialization;
+    @Column(name = "specialization", length = 500)
+    private String specialization; // Comma-separated list of specializations
 
     @Column(name = "experience_years")
     private Integer experienceYears;

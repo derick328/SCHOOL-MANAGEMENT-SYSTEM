@@ -477,9 +477,10 @@
                                 <label>Qualification</label>
                                 <input type="text" name="qualification" placeholder="e.g., B.Ed, M.Sc" style="width: 100%; padding: 8px; border: 2px solid var(--border); border-radius: 8px;">
                             </div>
-                            <div>
-                                <label>Specialization</label>
-                                <input type="text" name="specialization" placeholder="e.g., Mathematics" style="width: 100%; padding: 8px; border: 2px solid var(--border); border-radius: 8px;">
+                            <div style="grid-column: 1 / -1;">
+                                <label>Specializations (comma separated)</label>
+                                <input type="text" name="specialization" placeholder="e.g., Mathematics, Computer Science, Data Analysis" style="width: 100%; padding: 8px; border: 2px solid var(--border); border-radius: 8px;">
+                                <small style="color: var(--secondary); font-size: 12px;">Enter multiple specializations separated by commas</small>
                             </div>
                             <div>
                                 <label>Experience (Years)</label>
@@ -498,8 +499,9 @@
                                 <textarea name="address" rows="2" style="width: 100%; padding: 8px; border: 2px solid var(--border); border-radius: 8px;"></textarea>
                             </div>
                             <div style="grid-column: 1 / -1;">
-                                <label>Subjects (comma separated)</label>
-                                <input type="text" name="subjects" placeholder="e.g., Mathematics, Physics" style="width: 100%; padding: 8px; border: 2px solid var(--border); border-radius: 8px;">
+                                <label>Subjects Taught (comma separated)</label>
+                                <input type="text" name="subjects" placeholder="e.g., Mathematics, Physics, Chemistry, Algebra" style="width: 100%; padding: 8px; border: 2px solid var(--border); border-radius: 8px;">
+                                <small style="color: var(--secondary); font-size: 12px;">Enter all subjects this teacher will teach, separated by commas</small>
                             </div>
                             <div>
                                 <label>Username *</label>
@@ -600,9 +602,10 @@
                                     <label>Qualification</label>
                                     <input type="text" name="qualification" value="${teacher.qualification || ''}" style="width: 100%; padding: 8px; border: 2px solid var(--border); border-radius: 8px;">
                                 </div>
-                                <div>
-                                    <label>Specialization</label>
-                                    <input type="text" name="specialization" value="${teacher.specialization || ''}" style="width: 100%; padding: 8px; border: 2px solid var(--border); border-radius: 8px;">
+                                <div style="grid-column: 1 / -1;">
+                                    <label>Specializations (comma separated)</label>
+                                    <input type="text" name="specialization" value="${teacher.specialization || ''}" placeholder="e.g., Mathematics, Computer Science, Data Analysis" style="width: 100%; padding: 8px; border: 2px solid var(--border); border-radius: 8px;">
+                                    <small style="color: var(--secondary); font-size: 12px;">Enter multiple specializations separated by commas</small>
                                 </div>
                                 <div>
                                     <label>Experience (Years)</label>
@@ -630,8 +633,9 @@
                                     <textarea name="address" rows="2" style="width: 100%; padding: 8px; border: 2px solid var(--border); border-radius: 8px;">${teacher.address || ''}</textarea>
                                 </div>
                                 <div style="grid-column: 1 / -1;">
-                                    <label>Subjects (comma separated)</label>
-                                    <input type="text" name="subjects" value="${teacher.subjects || ''}" style="width: 100%; padding: 8px; border: 2px solid var(--border); border-radius: 8px;">
+                                    <label>Subjects Taught (comma separated)</label>
+                                    <input type="text" name="subjects" value="${teacher.subjects || ''}" placeholder="e.g., Mathematics, Physics, Chemistry, Algebra" style="width: 100%; padding: 8px; border: 2px solid var(--border); border-radius: 8px;">
+                                    <small style="color: var(--secondary); font-size: 12px;">Enter all subjects this teacher will teach, separated by commas</small>
                                 </div>
                             </div>
                             <div style="margin-top: 20px; display: flex; gap: 10px; justify-content: flex-end;">
