@@ -266,7 +266,7 @@
                                 <select id="roleFilter" style="padding: 8px; border: 2px solid var(--border); border-radius: 8px;">
                                     <option value="">All Roles</option>
                                     <option value="ADMIN">Admin</option>
-                                    <option value="PRINCIPAL">School Principal</option>
+                                    <option value="SCHOOL_PRINCIPAL">School Principal</option>
                                     <option value="TEACHER">Teacher</option>
                                     <option value="ACADEMIC_TEACHER">Academic Teacher</option>
                                     <option value="DISCIPLINE_TEACHER">Discipline Teacher</option>
@@ -762,6 +762,9 @@
                         <button class="btn btn-sm btn-primary" onclick="editUser(${user.id})" style="margin-right: 5px;">
                             Edit
                         </button>
+                        ${(user.role === 'TEACHER' || user.role === 'ACADEMIC_TEACHER' || user.role === 'DISCIPLINE_TEACHER') ? 
+                            `<button class="btn btn-sm" style="background: #10b981; color: white; margin-right: 5px;" onclick="promoteTeacher(${user.id}, '${user.role}')">Promote</button>` : ''
+                        }
                         ${user.active ? 
                             `<button class="btn btn-sm btn-warning" onclick="deactivateUser(${user.id})" style="margin-right: 5px;">Deactivate</button>` :
                             `<button class="btn btn-sm btn-success" onclick="activateUser(${user.id})" style="margin-right: 5px;">Activate</button>`
@@ -815,7 +818,7 @@
                                     <label>Role</label>
                                     <select name="role" style="width: 100%; padding: 8px; border: 2px solid var(--border); border-radius: 8px;">
                                         <option value="ADMIN" ${user.role === 'ADMIN' ? 'selected' : ''}>Admin</option>
-                                        <option value="PRINCIPAL" ${user.role === 'PRINCIPAL' ? 'selected' : ''}>School Principal</option>
+                                        <option value="SCHOOL_PRINCIPAL" ${user.role === 'SCHOOL_PRINCIPAL' ? 'selected' : ''}>School Principal</option>
                                         <option value="TEACHER" ${user.role === 'TEACHER' ? 'selected' : ''}>Teacher</option>
                                         <option value="ACADEMIC_TEACHER" ${user.role === 'ACADEMIC_TEACHER' ? 'selected' : ''}>Academic Teacher</option>
                                         <option value="DISCIPLINE_TEACHER" ${user.role === 'DISCIPLINE_TEACHER' ? 'selected' : ''}>Discipline Teacher</option>
@@ -944,6 +947,90 @@
             } catch (error) {
                 console.error('Error deleting user:', error);
                 UI.showAlert('Failed to delete user', 'error');
+            }
+        }
+
+        // Promote teacher to special role
+        async function promoteTeacher(userId, currentRole) {
+            // Create promotion modal
+            const modal = document.createElement('div');
+            modal.className = 'modal';
+            modal.innerHTML = `
+                <div class="modal-content" style="max-width: 500px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                        <h3>👨‍🏫 Promote Teacher</h3>
+                        <button onclick="this.closest('.modal').remove()" style="border: none; background: none; font-size: 24px; cursor: pointer;">&times;</button>
+                    </div>
+                    <p style="color: var(--secondary); margin-bottom: 20px;">
+                        Promote this teacher to a leadership or specialized role with additional responsibilities.
+                    </p>
+                    <form id="promoteTeacherForm" onsubmit="event.preventDefault(); submitTeacherPromotion(${userId});">
+                        <div style="display: flex; flex-direction: column; gap: 15px;">
+                            <div>
+                                <label style="font-weight: 600; margin-bottom: 8px; display: block;">Current Role</label>
+                                <input type="text" value="${currentRole.replace('_', ' ')}" disabled style="width: 100%; padding: 10px; border: 2px solid var(--border); border-radius: 8px; background: var(--light);">
+                            </div>
+                            <div>
+                                <label style="font-weight: 600; margin-bottom: 8px; display: block;">Promote To *</label>
+                                <select name="newRole" required style="width: 100%; padding: 10px; border: 2px solid var(--border); border-radius: 8px;">
+                                    <option value="">-- Select New Role --</option>
+                                    <option value="SCHOOL_PRINCIPAL">🎓 School Principal</option>
+                                    <option value="ACADEMIC_TEACHER">📚 Academic Teacher</option>
+                                    <option value="DISCIPLINE_TEACHER">⚖️ Discipline Teacher</option>
+                                    ${currentRole !== 'TEACHER' ? '<option value="TEACHER">👨‍🏫 Regular Teacher (Demote)</option>' : ''}
+                                </select>
+                            </div>
+                            <div style="padding: 12px; background: #eff6ff; border-left: 4px solid var(--info); border-radius: 8px;">
+                                <p style="margin: 0; font-size: 13px; color: var(--dark);">
+                                    <strong>Note:</strong> Role changes will take effect immediately and may affect the user's permissions and dashboard access.
+                                </p>
+                            </div>
+                        </div>
+                        <div style="margin-top: 24px; display: flex; gap: 10px; justify-content: flex-end;">
+                            <button type="button" class="btn btn-secondary" onclick="this.closest('.modal').remove()">Cancel</button>
+                            <button type="submit" class="btn btn-primary">Promote Teacher</button>
+                        </div>
+                    </form>
+                </div>
+            `;
+            document.body.appendChild(modal);
+        }
+
+        // Submit teacher promotion
+        async function submitTeacherPromotion(userId) {
+            const form = document.getElementById('promoteTeacherForm');
+            const formData = new FormData(form);
+            const newRole = formData.get('newRole');
+
+            if (!newRole) {
+                UI.showAlert('Please select a role', 'error');
+                return;
+            }
+
+            try {
+                // Get current user data first
+                const userResponse = await API.request(`/admin/users/${userId}`);
+                const userData = userResponse.data;
+
+                // Update user with new role
+                await API.request(`/admin/users/${userId}`, {
+                    method: 'PUT',
+                    body: JSON.stringify({
+                        username: userData.username,
+                        email: userData.email,
+                        firstName: userData.firstName,
+                        lastName: userData.lastName,
+                        role: newRole,
+                        active: userData.active
+                    })
+                });
+
+                UI.showAlert('Teacher promoted successfully! The user\'s role has been updated.', 'success');
+                document.querySelector('.modal').remove();
+                loadUsers();
+            } catch (error) {
+                console.error('Error promoting teacher:', error);
+                UI.showAlert(error.message || 'Failed to promote teacher', 'error');
             }
         }
 
