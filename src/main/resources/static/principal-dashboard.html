@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Principal Dashboard - School Management System</title>
+    <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+    <div class="dashboard">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h2>🎓 SMS Principal</h2>
+                <p>School Management</p>
+            </div>
+            
+            <nav class="sidebar-menu">
+                <a href="#" class="menu-item active" onclick="showSection('dashboard')">
+                    <span>📊</span> Dashboard
+                </a>
+                <a href="#" class="menu-item" onclick="showSection('teachers')">
+                    <span>👨‍🏫</span> Manage Teachers
+                </a>
+                <a href="#" class="menu-item" onclick="showSection('students')">
+                    <span>👨‍🎓</span> Manage Students
+                </a>
+                <a href="#" class="menu-item" onclick="showSection('users')">
+                    <span>👥</span> User Management
+                </a>
+                <a href="#" class="menu-item" onclick="showSection('classes')">
+                    <span>🏫</span> Classes
+                </a>
+                <a href="#" class="menu-item" onclick="showSection('reports')">
+                    <span>📈</span> Reports
+                </a>
+                <a href="#" class="menu-item" onclick="showSection('announcements')">
+                    <span>📢</span> Announcements
+                </a>
+            </nav>
+            
+            <div class="sidebar-footer">
+                <button onclick="handleLogout()" class="btn btn-danger" style="width: 100%;">
+                    Logout
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="topbar">
+                <div class="topbar-left">
+                    <h3 id="pageTitle">Principal Dashboard</h3>
+                </div>
+                <div class="topbar-right">
+                    <div class="user-info">
+                        <div class="user-avatar" id="userAvatar">P</div>
+                        <div>
+                            <div style="font-weight: 600; font-size: 14px;" id="userName">Principal</div>
+                            <div style="font-size: 12px; color: var(--secondary);">School Principal</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="content">
+                <!-- Dashboard Section -->
+                <div id="dashboardSection">
+                    <div class="card-grid">
+                        <div class="card">
+                            <div class="card-header">
+                                <span class="card-title">Total Teachers</span>
+                                <div class="card-icon icon-primary">👨‍🏫</div>
+                            </div>
+                            <div class="card-value" id="totalTeachers">0</div>
+                            <div class="card-label">All teaching staff</div>
+                        </div>
+
+                        <div class="card">
+                            <div class="card-header">
+                                <span class="card-title">Total Students</span>
+                                <div class="card-icon icon-success">👨‍🎓</div>
+                            </div>
+                            <div class="card-value" id="totalStudents">0</div>
+                            <div class="card-label">Enrolled students</div>
+                        </div>
+
+                        <div class="card">
+                            <div class="card-header">
+                                <span class="card-title">Active Classes</span>
+                                <div class="card-icon icon-info">🏫</div>
+                            </div>
+                            <div class="card-value" id="totalClasses">0</div>
+                            <div class="card-label">Running classes</div>
+                        </div>
+
+                        <div class="card">
+                            <div class="card-header">
+                                <span class="card-title">System Users</span>
+                                <div class="card-icon icon-warning">👥</div>
+                            </div>
+                            <div class="card-value" id="totalUsers">0</div>
+                            <div class="card-label">Total accounts</div>
+                        </div>
+                    </div>
+
+                    <!-- Quick Actions -->
+                    <div class="table-container" style="margin-top: 24px;">
+                        <div class="table-header">
+                            <h3>Quick Actions</h3>
+                        </div>
+                        <div style="padding: 20px; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
+                            <button class="btn btn-primary" onclick="showSection('teachers')">
+                                👨‍🏫 Manage Teachers
+                            </button>
+                            <button class="btn btn-primary" onclick="showSection('students')">
+                                👨‍🎓 Manage Students
+                            </button>
+                            <button class="btn btn-primary" onclick="showSection('users')">
+                                👥 Assign Roles
+                            </button>
+                            <button class="btn btn-primary" onclick="showSection('reports')">
+                                📈 View Reports
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Teachers Section -->
+                <div id="teachersSection" style="display: none;">
+                    <p style="padding: 20px; color: var(--secondary);">
+                        Teacher management coming soon... This will include assigning roles like Academic Teacher and Discipline Teacher.
+                    </p>
+                </div>
+
+                <!-- Students Section -->
+                <div id="studentsSection" style="display: none;">
+                    <p style="padding: 20px; color: var(--secondary);">
+                        Student management coming soon...
+                    </p>
+                </div>
+
+                <!-- Users Section -->
+                <div id="usersSection" style="display: none;">
+                    <p style="padding: 20px; color: var(--secondary);">
+                        User role management coming soon... You'll be able to assign Academic Teacher and Discipline Teacher roles here.
+                    </p>
+                </div>
+
+                <!-- Classes Section -->
+                <div id="classesSection" style="display: none;">
+                    <p style="padding: 20px; color: var(--secondary);">
+                        Class management coming soon...
+                    </p>
+                </div>
+
+                <!-- Reports Section -->
+                <div id="reportsSection" style="display: none;">
+                    <p style="padding: 20px; color: var(--secondary);">
+                        Reports and analytics coming soon...
+                    </p>
+                </div>
+
+                <!-- Announcements Section -->
+                <div id="announcementsSection" style="display: none;">
+                    <p style="padding: 20px; color: var(--secondary);">
+                        Announcements management coming soon...
+                    </p>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="/js/app.js"></script>
+    <script>
+        initDashboard();
+
+        function showSection(section) {
+            document.querySelectorAll('[id$="Section"]').forEach(el => el.style.display = 'none');
+            document.getElementById(section + 'Section').style.display = 'block';
+            document.querySelectorAll('.menu-item').forEach(el => el.classList.remove('active'));
+            event.target.closest('.menu-item').classList.add('active');
+            
+            const titles = {
+                dashboard: 'Principal Dashboard',
+                teachers: 'Manage Teachers',
+                students: 'Manage Students',
+                users: 'User Management',
+                classes: 'Classes',
+                reports: 'Reports',
+                announcements: 'Announcements'
+            };
+            document.getElementById('pageTitle').textContent = titles[section];
+        }
+
+        async function loadDashboardData() {
+            // This will be implemented when you add the features
+            document.getElementById('totalTeachers').textContent = '0';
+            document.getElementById('totalStudents').textContent = '0';
+            document.getElementById('totalClasses').textContent = '0';
+            document.getElementById('totalUsers').textContent = '0';
+        }
+
+        loadDashboardData();
+    </script>
+</body>
+</html>

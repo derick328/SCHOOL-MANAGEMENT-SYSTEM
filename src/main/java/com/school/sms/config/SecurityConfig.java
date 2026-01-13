@@ -100,6 +100,7 @@ public class SecurityConfig {
                                                                 "/home.html",
                                                                 "/login.html",
                                                                 "/admin-dashboard.html",
+                                                                "/principal-dashboard.html",
                                                                 "/teacher-dashboard.html",
                                                                 "/student-dashboard.html",
                                                                 "/parent-dashboard.html",
@@ -115,16 +116,18 @@ public class SecurityConfig {
                                                                 "/favicon.ico")
                                                 .permitAll()
 
-                                                // Admin API endpoints
-                                                .requestMatchers("/api/admin/**").hasRole("ADMIN")
+                                                // Admin API endpoints - Full access
+                                                .requestMatchers("/api/admin/**").hasAnyRole("ADMIN", "PRINCIPAL")
 
-                                                // Teacher API endpoints
+                                                // Teacher API endpoints - Admin, Principal, and Teachers
                                                 .requestMatchers("/api/teacher/**")
-                                                .hasAnyRole("ADMIN", "TEACHER")
+                                                .hasAnyRole("ADMIN", "PRINCIPAL", "TEACHER", "ACADEMIC_TEACHER",
+                                                                "DISCIPLINE_TEACHER")
 
                                                 // Student API endpoints
                                                 .requestMatchers("/api/student/**")
-                                                .hasAnyRole("ADMIN", "TEACHER", "STUDENT")
+                                                .hasAnyRole("ADMIN", "PRINCIPAL", "TEACHER", "ACADEMIC_TEACHER",
+                                                                "DISCIPLINE_TEACHER", "STUDENT")
 
                                                 // Parent API endpoints
                                                 .requestMatchers("/api/parent/**")

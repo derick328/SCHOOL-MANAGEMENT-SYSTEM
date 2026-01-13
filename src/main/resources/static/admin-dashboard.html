@@ -266,7 +266,10 @@
                                 <select id="roleFilter" style="padding: 8px; border: 2px solid var(--border); border-radius: 8px;">
                                     <option value="">All Roles</option>
                                     <option value="ADMIN">Admin</option>
+                                    <option value="PRINCIPAL">School Principal</option>
                                     <option value="TEACHER">Teacher</option>
+                                    <option value="ACADEMIC_TEACHER">Academic Teacher</option>
+                                    <option value="DISCIPLINE_TEACHER">Discipline Teacher</option>
                                     <option value="STUDENT">Student</option>
                                     <option value="PARENT">Parent</option>
                                 </select>
@@ -812,7 +815,10 @@
                                     <label>Role</label>
                                     <select name="role" style="width: 100%; padding: 8px; border: 2px solid var(--border); border-radius: 8px;">
                                         <option value="ADMIN" ${user.role === 'ADMIN' ? 'selected' : ''}>Admin</option>
+                                        <option value="PRINCIPAL" ${user.role === 'PRINCIPAL' ? 'selected' : ''}>School Principal</option>
                                         <option value="TEACHER" ${user.role === 'TEACHER' ? 'selected' : ''}>Teacher</option>
+                                        <option value="ACADEMIC_TEACHER" ${user.role === 'ACADEMIC_TEACHER' ? 'selected' : ''}>Academic Teacher</option>
+                                        <option value="DISCIPLINE_TEACHER" ${user.role === 'DISCIPLINE_TEACHER' ? 'selected' : ''}>Discipline Teacher</option>
                                         <option value="STUDENT" ${user.role === 'STUDENT' ? 'selected' : ''}>Student</option>
                                         <option value="PARENT" ${user.role === 'PARENT' ? 'selected' : ''}>Parent</option>
                                     </select>
