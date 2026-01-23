@@ -261,4 +261,4 @@ Password: Student@123
 Email: student@school.com
 Role: STUDENT
 Name: Demo Student
-Phone: +1234567892
+Phone: +255753410400
