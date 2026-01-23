@@ -255,7 +255,7 @@ Email: teacher@school.com
 Role: TEACHER
 Name: Demo Teacher
 Phone: +1234567891
-3. STUDENT User
+3. STUDENT User logins
 Username: student_demo
 Password: Student@123
 Email: student@school.com
