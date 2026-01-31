@@ -319,7 +319,9 @@
             document.getElementById('pageTitle').textContent = titles[section];
             
             // Load data for specific sections
-            if (section === 'teachers') {
+            if (section === 'students') {
+                loadStudents();
+            } else if (section === 'teachers') {
                 loadTeachers();
             } else if (section === 'users') {
                 loadUsers();
@@ -329,9 +331,17 @@
         // Load dashboard data
         async function loadDashboardData() {
             try {
-                // These would be real API calls in production
-                document.getElementById('totalStudents').textContent = '0';
-                document.getElementById('totalTeachers').textContent = '0';
+                // Load students count
+                const studentsResponse = await API.request('/admin/students');
+                const students = studentsResponse.data || [];
+                document.getElementById('totalStudents').textContent = students.length;
+
+                // Load teachers count
+                const teachersResponse = await API.request('/admin/teachers');
+                const teachers = teachersResponse.data || [];
+                document.getElementById('totalTeachers').textContent = teachers.length;
+
+                // Classes and subjects would come from their respective endpoints
                 document.getElementById('totalClasses').textContent = '0';
                 document.getElementById('totalSubjects').textContent = '0';
 
@@ -1017,9 +1027,393 @@
             }
         }
 
-        // Placeholder functions for other sections
+        // ========================================
+        // STUDENT MANAGEMENT FUNCTIONS
+        // ========================================
+        
+        // Load students
+        async function loadStudents() {
+            try {
+                const response = await API.request('/admin/students');
+                const students = response.data;
+                
+                const studentsTable = document.getElementById('studentsTable');
+                
+                if (!students || students.length === 0) {
+                    studentsTable.innerHTML = `
+                        <tr>
+                            <td colspan="6" style="text-align: center; padding: 40px;">
+                                No students found. Click "Add Student" to create one.
+                            </td>
+                        </tr>
+                    `;
+                    return;
+                }
+                
+                studentsTable.innerHTML = students.map(student => `
+                    <tr>
+                        <td>${student.admissionNumber || 'N/A'}</td>
+                        <td>${student.firstName} ${student.lastName}</td>
+                        <td>${student.email}</td>
+                        <td>${student.currentClass}${student.section ? '-' + student.section : ''}</td>
+                        <td>
+                            <span class="badge ${student.status === 'ACTIVE' ? 'badge-success' : 'badge-warning'}">
+                                ${student.status}
+                            </span>
+                        </td>
+                        <td>
+                            <button class="btn btn-sm btn-primary" onclick="editStudent(${student.id})" style="margin-right: 5px;">
+                                Edit
+                            </button>
+                            <button class="btn btn-sm btn-danger" onclick="deleteStudent(${student.id})">
+                                Delete
+                            </button>
+                        </td>
+                    </tr>
+                `).join('');
+            } catch (error) {
+                console.error('Error loading students:', error);
+                document.getElementById('studentsTable').innerHTML = `
+                    <tr>
+                        <td colspan="6" style="text-align: center; padding: 40px; color: var(--danger);">
+                            Failed to load students. Please try again.
+                        </td>
+                    </tr>
+                `;
+            }
+        }
+        
+        // Show add student modal
         function showAddStudentModal() {
-            UI.showAlert('Student creation form will be implemented with backend API', 'info');
+            const modal = document.createElement('div');
+            modal.className = 'modal';
+            modal.innerHTML = `
+                <div class="modal-content" style="max-width: 800px; max-height: 90vh; overflow-y: auto;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                        <h3>Add New Student</h3>
+                        <button onclick="this.closest('.modal').remove()" style="border: none; background: none; font-size: 24px; cursor: pointer;">&times;</button>
+                    </div>
+                    <form id="addStudentForm" onsubmit="event.preventDefault(); submitStudent();">
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                            <!-- Basic Information -->
+                            <div style="grid-column: 1 / -1;">
+                                <h4 style="margin: 10px 0; color: var(--primary);">Basic Information</h4>
+                            </div>
+                            <div>
+                                <label>First Name *</label>
+                                <input type="text" name="firstName" required style="width: 100%; padding: 8px; border: 2px solid var(--border); border-radius: 8px;">
+                            </div>
+                            <div>
+                                <label>Last Name *</label>
+                                <input type="text" name="lastName" required style="width: 100%; padding: 8px; border: 2px solid var(--border); border-radius: 8px;">
+                            </div>
+                            <div>
+                                <label>Email *</label>
+                                <input type="email" name="email" required style="width: 100%; padding: 8px; border: 2px solid var(--border); border-radius: 8px;">
+                            </div>
+                            <div>
+                                <label>Phone</label>
+                                <input type="tel" name="phone" style="width: 100%; padding: 8px; border: 2px solid var(--border); border-radius: 8px;">
+                            </div>
+                            <div>
+                                <label>Date of Birth *</label>
+                                <input type="date" name="dateOfBirth" required style="width: 100%; padding: 8px; border: 2px solid var(--border); border-radius: 8px;">
+                            </div>
+                            <div>
+                                <label>Gender *</label>
+                                <select name="gender" required style="width: 100%; padding: 8px; border: 2px solid var(--border); border-radius: 8px;">
+                                    <option value="">Select</option>
+                                    <option value="MALE">Male</option>
+                                    <option value="FEMALE">Female</option>
+                                    <option value="OTHER">Other</option>
+                                </select>
+                            </div>
+                            
+                            <!-- Academic Information -->
+                            <div style="grid-column: 1 / -1;">
+                                <h4 style="margin: 10px 0; color: var(--primary);">Academic Information</h4>
+                            </div>
+                            <div>
+                                <label>Class *</label>
+                                <input type="text" name="currentClass" required placeholder="e.g., 10, 12" style="width: 100%; padding: 8px; border: 2px solid var(--border); border-radius: 8px;">
+                            </div>
+                            <div>
+                                <label>Section</label>
+                                <input type="text" name="section" placeholder="e.g., A, B" style="width: 100%; padding: 8px; border: 2px solid var(--border); border-radius: 8px;">
+                            </div>
+                            <div>
+                                <label>Roll Number</label>
+                                <input type="text" name="rollNumber" style="width: 100%; padding: 8px; border: 2px solid var(--border); border-radius: 8px;">
+                            </div>
+                            <div>
+                                <label>Admission Date *</label>
+                                <input type="date" name="admissionDate" required style="width: 100%; padding: 8px; border: 2px solid var(--border); border-radius: 8px;">
+                            </div>
+                            <div>
+                                <label>Blood Group</label>
+                                <select name="bloodGroup" style="width: 100%; padding: 8px; border: 2px solid var(--border); border-radius: 8px;">
+                                    <option value="">Select</option>
+                                    <option value="A_POSITIVE">A+</option>
+                                    <option value="A_NEGATIVE">A-</option>
+                                    <option value="B_POSITIVE">B+</option>
+                                    <option value="B_NEGATIVE">B-</option>
+                                    <option value="O_POSITIVE">O+</option>
+                                    <option value="O_NEGATIVE">O-</option>
+                                    <option value="AB_POSITIVE">AB+</option>
+                                    <option value="AB_NEGATIVE">AB-</option>
+                                </select>
+                            </div>
+                            
+                            <!-- Parent/Guardian Information -->
+                            <div style="grid-column: 1 / -1;">
+                                <h4 style="margin: 10px 0; color: var(--primary);">Parent/Guardian Information</h4>
+                            </div>
+                            <div>
+                                <label>Father's Name *</label>
+                                <input type="text" name="fatherName" required style="width: 100%; padding: 8px; border: 2px solid var(--border); border-radius: 8px;">
+                            </div>
+                            <div>
+                                <label>Father's Phone</label>
+                                <input type="tel" name="fatherPhone" pattern="[0-9]{10,15}" placeholder="10-15 digits" style="width: 100%; padding: 8px; border: 2px solid var(--border); border-radius: 8px;">
+                            </div>
+                            <div>
+                                <label>Mother's Name</label>
+                                <input type="text" name="motherName" style="width: 100%; padding: 8px; border: 2px solid var(--border); border-radius: 8px;">
+                            </div>
+                            <div>
+                                <label>Mother's Phone</label>
+                                <input type="tel" name="motherPhone" pattern="[0-9]{10,15}" placeholder="10-15 digits" style="width: 100%; padding: 8px; border: 2px solid var(--border); border-radius: 8px;">
+                            </div>
+                            <div style="grid-column: 1 / -1;">
+                                <label>Address</label>
+                                <textarea name="address" rows="2" style="width: 100%; padding: 8px; border: 2px solid var(--border); border-radius: 8px;"></textarea>
+                            </div>
+                            
+                            <!-- Account Information -->
+                            <div style="grid-column: 1 / -1;">
+                                <h4 style="margin: 10px 0; color: var(--primary);">Account Information</h4>
+                            </div>
+                            <div>
+                                <label>Username *</label>
+                                <input type="text" name="username" required style="width: 100%; padding: 8px; border: 2px solid var(--border); border-radius: 8px;">
+                            </div>
+                            <div>
+                                <label>Password *</label>
+                                <input type="password" name="password" required minlength="6" style="width: 100%; padding: 8px; border: 2px solid var(--border); border-radius: 8px;">
+                            </div>
+                        </div>
+                        <div style="margin-top: 20px; display: flex; gap: 10px; justify-content: flex-end;">
+                            <button type="button" class="btn btn-secondary" onclick="this.closest('.modal').remove()">Cancel</button>
+                            <button type="submit" class="btn btn-primary">Create Student</button>
+                        </div>
+                    </form>
+                </div>
+            `;
+            document.body.appendChild(modal);
+        }
+        
+        // Submit new student
+        async function submitStudent() {
+            const form = document.getElementById('addStudentForm');
+            const formData = new FormData(form);
+            const data = {};
+            
+            formData.forEach((value, key) => {
+                if (value) data[key] = value;
+            });
+            
+            try {
+                await API.request('/admin/students', {
+                    method: 'POST',
+                    body: JSON.stringify(data)
+                });
+                
+                UI.showAlert('Student created successfully', 'success');
+                document.querySelector('.modal').remove();
+                loadStudents();
+                loadDashboardData(); // Refresh stats
+            } catch (error) {
+                console.error('Error creating student:', error);
+                UI.showAlert(error.message || 'Failed to create student', 'error');
+            }
+        }
+        
+        // Edit student
+        async function editStudent(id) {
+            try {
+                const response = await API.request(`/admin/students/${id}`);
+                const student = response.data;
+                
+                const modal = document.createElement('div');
+                modal.className = 'modal';
+                modal.innerHTML = `
+                    <div class="modal-content" style="max-width: 800px; max-height: 90vh; overflow-y: auto;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                            <h3>Edit Student</h3>
+                            <button onclick="this.closest('.modal').remove()" style="border: none; background: none; font-size: 24px; cursor: pointer;">&times;</button>
+                        </div>
+                        <form id="editStudentForm" onsubmit="event.preventDefault(); submitStudentUpdate(${id});">
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                                <!-- Basic Information -->
+                                <div style="grid-column: 1 / -1;">
+                                    <h4 style="margin: 10px 0; color: var(--primary);">Basic Information</h4>
+                                </div>
+                                <div>
+                                    <label>Admission Number</label>
+                                    <input type="text" value="${student.admissionNumber || ''}" disabled style="width: 100%; padding: 8px; border: 2px solid var(--border); border-radius: 8px; background: #f5f5f5;">
+                                </div>
+                                <div>
+                                    <label>Roll Number</label>
+                                    <input type="text" name="rollNumber" value="${student.rollNumber || ''}" style="width: 100%; padding: 8px; border: 2px solid var(--border); border-radius: 8px;">
+                                </div>
+                                <div>
+                                    <label>First Name *</label>
+                                    <input type="text" name="firstName" value="${student.firstName || ''}" required style="width: 100%; padding: 8px; border: 2px solid var(--border); border-radius: 8px;">
+                                </div>
+                                <div>
+                                    <label>Last Name *</label>
+                                    <input type="text" name="lastName" value="${student.lastName || ''}" required style="width: 100%; padding: 8px; border: 2px solid var(--border); border-radius: 8px;">
+                                </div>
+                                <div>
+                                    <label>Email *</label>
+                                    <input type="email" name="email" value="${student.email || ''}" required style="width: 100%; padding: 8px; border: 2px solid var(--border); border-radius: 8px;">
+                                </div>
+                                <div>
+                                    <label>Phone</label>
+                                    <input type="tel" name="phone" value="${student.phone || ''}" style="width: 100%; padding: 8px; border: 2px solid var(--border); border-radius: 8px;">
+                                </div>
+                                <div>
+                                    <label>Date of Birth *</label>
+                                    <input type="date" name="dateOfBirth" value="${student.dateOfBirth || ''}" required style="width: 100%; padding: 8px; border: 2px solid var(--border); border-radius: 8px;">
+                                </div>
+                                <div>
+                                    <label>Gender *</label>
+                                    <select name="gender" required style="width: 100%; padding: 8px; border: 2px solid var(--border); border-radius: 8px;">
+                                        <option value="">Select</option>
+                                        <option value="MALE" ${student.gender === 'MALE' ? 'selected' : ''}>Male</option>
+                                        <option value="FEMALE" ${student.gender === 'FEMALE' ? 'selected' : ''}>Female</option>
+                                        <option value="OTHER" ${student.gender === 'OTHER' ? 'selected' : ''}>Other</option>
+                                    </select>
+                                </div>
+                                
+                                <!-- Academic Information -->
+                                <div style="grid-column: 1 / -1;">
+                                    <h4 style="margin: 10px 0; color: var(--primary);">Academic Information</h4>
+                                </div>
+                                <div>
+                                    <label>Class *</label>
+                                    <input type="text" name="currentClass" value="${student.currentClass || ''}" required style="width: 100%; padding: 8px; border: 2px solid var(--border); border-radius: 8px;">
+                                </div>
+                                <div>
+                                    <label>Section</label>
+                                    <input type="text" name="section" value="${student.section || ''}" style="width: 100%; padding: 8px; border: 2px solid var(--border); border-radius: 8px;">
+                                </div>
+                                <div>
+                                    <label>Blood Group</label>
+                                    <select name="bloodGroup" style="width: 100%; padding: 8px; border: 2px solid var(--border); border-radius: 8px;">
+                                        <option value="">Select</option>
+                                        <option value="A_POSITIVE" ${student.bloodGroup === 'A_POSITIVE' ? 'selected' : ''}>A+</option>
+                                        <option value="A_NEGATIVE" ${student.bloodGroup === 'A_NEGATIVE' ? 'selected' : ''}>A-</option>
+                                        <option value="B_POSITIVE" ${student.bloodGroup === 'B_POSITIVE' ? 'selected' : ''}>B+</option>
+                                        <option value="B_NEGATIVE" ${student.bloodGroup === 'B_NEGATIVE' ? 'selected' : ''}>B-</option>
+                                        <option value="O_POSITIVE" ${student.bloodGroup === 'O_POSITIVE' ? 'selected' : ''}>O+</option>
+                                        <option value="O_NEGATIVE" ${student.bloodGroup === 'O_NEGATIVE' ? 'selected' : ''}>O-</option>
+                                        <option value="AB_POSITIVE" ${student.bloodGroup === 'AB_POSITIVE' ? 'selected' : ''}>AB+</option>
+                                        <option value="AB_NEGATIVE" ${student.bloodGroup === 'AB_NEGATIVE' ? 'selected' : ''}>AB-</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label>Status</label>
+                                    <select name="status" style="width: 100%; padding: 8px; border: 2px solid var(--border); border-radius: 8px;">
+                                        <option value="ACTIVE" ${student.status === 'ACTIVE' ? 'selected' : ''}>Active</option>
+                                        <option value="INACTIVE" ${student.status === 'INACTIVE' ? 'selected' : ''}>Inactive</option>
+                                        <option value="GRADUATED" ${student.status === 'GRADUATED' ? 'selected' : ''}>Graduated</option>
+                                        <option value="TRANSFERRED" ${student.status === 'TRANSFERRED' ? 'selected' : ''}>Transferred</option>
+                                    </select>
+                                </div>
+                                
+                                <!-- Parent/Guardian Information -->
+                                <div style="grid-column: 1 / -1;">
+                                    <h4 style="margin: 10px 0; color: var(--primary);">Parent/Guardian Information</h4>
+                                </div>
+                                <div>
+                                    <label>Father's Name *</label>
+                                    <input type="text" name="fatherName" value="${student.fatherName || ''}" required style="width: 100%; padding: 8px; border: 2px solid var(--border); border-radius: 8px;">
+                                </div>
+                                <div>
+                                    <label>Father's Phone</label>
+                                    <input type="tel" name="fatherPhone" value="${student.fatherPhone || ''}" pattern="[0-9]{10,15}" style="width: 100%; padding: 8px; border: 2px solid var(--border); border-radius: 8px;">
+                                </div>
+                                <div>
+                                    <label>Mother's Name</label>
+                                    <input type="text" name="motherName" value="${student.motherName || ''}" style="width: 100%; padding: 8px; border: 2px solid var(--border); border-radius: 8px;">
+                                </div>
+                                <div>
+                                    <label>Mother's Phone</label>
+                                    <input type="tel" name="motherPhone" value="${student.motherPhone || ''}" pattern="[0-9]{10,15}" style="width: 100%; padding: 8px; border: 2px solid var(--border); border-radius: 8px;">
+                                </div>
+                                <div style="grid-column: 1 / -1;">
+                                    <label>Address</label>
+                                    <textarea name="address" rows="2" style="width: 100%; padding: 8px; border: 2px solid var(--border); border-radius: 8px;">${student.address || ''}</textarea>
+                                </div>
+                            </div>
+                            <div style="margin-top: 20px; display: flex; gap: 10px; justify-content: flex-end;">
+                                <button type="button" class="btn btn-secondary" onclick="this.closest('.modal').remove()">Cancel</button>
+                                <button type="submit" class="btn btn-primary">Update Student</button>
+                            </div>
+                        </form>
+                    </div>
+                `;
+                document.body.appendChild(modal);
+            } catch (error) {
+                console.error('Error loading student:', error);
+                UI.showAlert('Failed to load student details', 'error');
+            }
+        }
+        
+        // Submit student update
+        async function submitStudentUpdate(id) {
+            const form = document.getElementById('editStudentForm');
+            const formData = new FormData(form);
+            const data = {};
+            
+            formData.forEach((value, key) => {
+                if (value) data[key] = value;
+            });
+            
+            try {
+                await API.request(`/admin/students/${id}`, {
+                    method: 'PUT',
+                    body: JSON.stringify(data)
+                });
+                
+                UI.showAlert('Student updated successfully', 'success');
+                document.querySelector('.modal').remove();
+                loadStudents();
+            } catch (error) {
+                console.error('Error updating student:', error);
+                UI.showAlert(error.message || 'Failed to update student', 'error');
+            }
+        }
+        
+        // Delete student
+        async function deleteStudent(id) {
+            if (!confirm('Are you sure you want to delete this student? This action cannot be undone.')) {
+                return;
+            }
+            
+            try {
+                await API.request(`/admin/students/${id}`, {
+                    method: 'DELETE'
+                });
+                
+                UI.showAlert('Student deleted successfully', 'success');
+                loadStudents();
+                loadDashboardData(); // Refresh stats
+            } catch (error) {
+                console.error('Error deleting student:', error);
+                UI.showAlert('Failed to delete student', 'error');
+            }
         }
 
         // Load data on page load
