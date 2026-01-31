@@ -123,9 +123,14 @@
     <script>
         // Redirect if already logged in
         if (Auth.isAuthenticated()) {
-            const role = Auth.getRole();
+            let role = Auth.getRole();
             if (role) {
-                window.location.href = `/${role.toLowerCase()}-dashboard.html`;
+                role = role.toLowerCase();
+                // Map teacher subtypes to teacher dashboard
+                if (role === 'academic_teacher' || role === 'discipline_teacher') {
+                    role = 'teacher';
+                }
+                window.location.href = `/${role}-dashboard.html`;
             }
         }
     </script>

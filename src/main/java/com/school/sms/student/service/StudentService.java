@@ -74,7 +74,7 @@ public class StudentService {
                 .password(passwordEncoder.encode(request.getPassword() != null ? request.getPassword() : "student123"))
                 .firstName(request.getFirstName())
                 .lastName(request.getLastName())
-                .phone(request.getPhone())
+                .phoneNumber(request.getPhone())
                 .role(Role.STUDENT)
                 .accountStatus(AccountStatus.ACTIVE)
                 .emailVerified(true)
@@ -152,7 +152,7 @@ public class StudentService {
             user.setEmail(request.getEmail());
         }
         if (request.getPhone() != null) {
-            user.setPhone(request.getPhone());
+            user.setPhoneNumber(request.getPhone());
         }
 
         userRepository.save(user);
@@ -291,7 +291,7 @@ public class StudentService {
                 .lastName(student.getUser().getLastName())
                 .fullName(student.getFullName())
                 .email(student.getUser().getEmail())
-                .phone(student.getUser().getPhone())
+                .phone(student.getUser().getPhoneNumber())
                 .dateOfBirth(student.getDateOfBirth())
                 .age(student.getAge())
                 .gender(student.getGender())

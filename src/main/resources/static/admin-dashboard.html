@@ -1112,8 +1112,9 @@
                                 <input type="email" name="email" required style="width: 100%; padding: 8px; border: 2px solid var(--border); border-radius: 8px;">
                             </div>
                             <div>
-                                <label>Phone</label>
-                                <input type="tel" name="phone" style="width: 100%; padding: 8px; border: 2px solid var(--border); border-radius: 8px;">
+                                <label>Phone (Tanzania)</label>
+                                <input type="tel" name="phone" pattern="(\+255|0)[67][0-9]{8}" placeholder="+255712345678 or 0712345678" style="width: 100%; padding: 8px; border: 2px solid var(--border); border-radius: 8px;">
+                                <small style="color: var(--secondary); font-size: 12px;">Tanzania mobile number</small>
                             </div>
                             <div>
                                 <label>Date of Birth *</label>
@@ -1131,19 +1132,39 @@
                             
                             <!-- Academic Information -->
                             <div style="grid-column: 1 / -1;">
-                                <h4 style="margin: 10px 0; color: var(--primary);">Academic Information</h4>
+                                <h4 style="margin: 10px 0; color: var(--primary);">Academic Information (Tanzania Curriculum)</h4>
                             </div>
                             <div>
-                                <label>Class *</label>
-                                <input type="text" name="currentClass" required placeholder="e.g., 10, 12" style="width: 100%; padding: 8px; border: 2px solid var(--border); border-radius: 8px;">
+                                <label>Education Level *</label>
+                                <select name="educationLevel" id="educationLevel" required onchange="updateClassOptions()" style="width: 100%; padding: 8px; border: 2px solid var(--border); border-radius: 8px;">
+                                    <option value="">Select Education Level</option>
+                                    <option value="PRIMARY">Primary Education (Standard 1-7)</option>
+                                    <option value="O_LEVEL">Ordinary Level (Form 1-4)</option>
+                                    <option value="A_LEVEL">Advanced Level (Form 5-6)</option>
+                                </select>
                             </div>
                             <div>
-                                <label>Section</label>
-                                <input type="text" name="section" placeholder="e.g., A, B" style="width: 100%; padding: 8px; border: 2px solid var(--border); border-radius: 8px;">
+                                <label>Class/Form *</label>
+                                <select name="currentClass" id="currentClass" required style="width: 100%; padding: 8px; border: 2px solid var(--border); border-radius: 8px;">
+                                    <option value="">Select Education Level First</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label>Stream/Section</label>
+                                <select name="section" style="width: 100%; padding: 8px; border: 2px solid var(--border); border-radius: 8px;">
+                                    <option value="">Select Stream</option>
+                                    <option value="A">Stream A</option>
+                                    <option value="B">Stream B</option>
+                                    <option value="C">Stream C</option>
+                                    <option value="D">Stream D</option>
+                                    <option value="SCIENCE">Science Stream (A-Level)</option>
+                                    <option value="ARTS">Arts Stream (A-Level)</option>
+                                    <option value="COMMERCE">Commerce Stream (A-Level)</option>
+                                </select>
                             </div>
                             <div>
                                 <label>Roll Number</label>
-                                <input type="text" name="rollNumber" style="width: 100%; padding: 8px; border: 2px solid var(--border); border-radius: 8px;">
+                                <input type="text" name="rollNumber" placeholder="Optional" style="width: 100%; padding: 8px; border: 2px solid var(--border); border-radius: 8px;">
                             </div>
                             <div>
                                 <label>Admission Date *</label>
@@ -1173,20 +1194,65 @@
                                 <input type="text" name="fatherName" required style="width: 100%; padding: 8px; border: 2px solid var(--border); border-radius: 8px;">
                             </div>
                             <div>
-                                <label>Father's Phone</label>
-                                <input type="tel" name="fatherPhone" pattern="[0-9]{10,15}" placeholder="10-15 digits" style="width: 100%; padding: 8px; border: 2px solid var(--border); border-radius: 8px;">
+                                <label>Father's Phone (Tanzania)</label>
+                                <input type="tel" name="fatherPhone" pattern="(\+255|0)[67][0-9]{8}" placeholder="+255712345678 or 0712345678" style="width: 100%; padding: 8px; border: 2px solid var(--border); border-radius: 8px;">
+                                <small style="color: var(--secondary); font-size: 12px;">Tanzania mobile format</small>
                             </div>
                             <div>
                                 <label>Mother's Name</label>
                                 <input type="text" name="motherName" style="width: 100%; padding: 8px; border: 2px solid var(--border); border-radius: 8px;">
                             </div>
                             <div>
-                                <label>Mother's Phone</label>
-                                <input type="tel" name="motherPhone" pattern="[0-9]{10,15}" placeholder="10-15 digits" style="width: 100%; padding: 8px; border: 2px solid var(--border); border-radius: 8px;">
+                                <label>Mother's Phone (Tanzania)</label>
+                                <input type="tel" name="motherPhone" pattern="(\+255|0)[67][0-9]{8}" placeholder="+255712345678 or 0712345678" style="width: 100%; padding: 8px; border: 2px solid var(--border); border-radius: 8px;">
+                                <small style="color: var(--secondary); font-size: 12px;">Tanzania mobile format</small>
                             </div>
                             <div style="grid-column: 1 / -1;">
-                                <label>Address</label>
-                                <textarea name="address" rows="2" style="width: 100%; padding: 8px; border: 2px solid var(--border); border-radius: 8px;"></textarea>
+                                <h4 style="margin: 10px 0; color: var(--primary);">Address Information (Tanzania)</h4>
+                            </div>
+                            <div>
+                                <label>Region</label>
+                                <select name="state" style="width: 100%; padding: 8px; border: 2px solid var(--border); border-radius: 8px;">
+                                    <option value="">Select Region</option>
+                                    <option value="Arusha">Arusha</option>
+                                    <option value="Dar es Salaam">Dar es Salaam</option>
+                                    <option value="Dodoma">Dodoma</option>
+                                    <option value="Geita">Geita</option>
+                                    <option value="Iringa">Iringa</option>
+                                    <option value="Kagera">Kagera</option>
+                                    <option value="Katavi">Katavi</option>
+                                    <option value="Kigoma">Kigoma</option>
+                                    <option value="Kilimanjaro">Kilimanjaro</option>
+                                    <option value="Lindi">Lindi</option>
+                                    <option value="Manyara">Manyara</option>
+                                    <option value="Mara">Mara</option>
+                                    <option value="Mbeya">Mbeya</option>
+                                    <option value="Morogoro">Morogoro</option>
+                                    <option value="Mtwara">Mtwara</option>
+                                    <option value="Mwanza">Mwanza</option>
+                                    <option value="Njombe">Njombe</option>
+                                    <option value="Pemba North">Pemba North</option>
+                                    <option value="Pemba South">Pemba South</option>
+                                    <option value="Pwani">Pwani</option>
+                                    <option value="Rukwa">Rukwa</option>
+                                    <option value="Ruvuma">Ruvuma</option>
+                                    <option value="Shinyanga">Shinyanga</option>
+                                    <option value="Simiyu">Simiyu</option>
+                                    <option value="Singida">Singida</option>
+                                    <option value="Songwe">Songwe</option>
+                                    <option value="Tabora">Tabora</option>
+                                    <option value="Tanga">Tanga</option>
+                                    <option value="Unguja North">Unguja North</option>
+                                    <option value="Unguja South">Unguja South</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label>District/City</label>
+                                <input type="text" name="city" placeholder="e.g., Kinondoni, Temeke, Ilala" style="width: 100%; padding: 8px; border: 2px solid var(--border); border-radius: 8px;">
+                            </div>
+                            <div style="grid-column: 1 / -1;">
+                                <label>Ward/Street Address</label>
+                                <textarea name="address" rows="2" placeholder="Ward, Street, House Number" style="width: 100%; padding: 8px; border: 2px solid var(--border); border-radius: 8px;"></textarea>
                             </div>
                             
                             <!-- Account Information -->
@@ -1413,6 +1479,45 @@
             } catch (error) {
                 console.error('Error deleting student:', error);
                 UI.showAlert('Failed to delete student', 'error');
+            }
+        }
+
+        // ========================================
+        // TANZANIA CURRICULUM HELPER FUNCTIONS
+        // ========================================
+        
+        // Update class options based on education level selection
+        function updateClassOptions() {
+            const educationLevel = document.getElementById('educationLevel').value;
+            const classSelect = document.getElementById('currentClass');
+            
+            // Clear existing options
+            classSelect.innerHTML = '<option value="">Select Class/Form</option>';
+            
+            if (educationLevel === 'PRIMARY') {
+                // Primary Education: Standard 1-7
+                for (let i = 1; i <= 7; i++) {
+                    const option = document.createElement('option');
+                    option.value = `Standard ${i}`;
+                    option.textContent = `Standard ${i}`;
+                    classSelect.appendChild(option);
+                }
+            } else if (educationLevel === 'O_LEVEL') {
+                // Ordinary Level: Form 1-4
+                for (let i = 1; i <= 4; i++) {
+                    const option = document.createElement('option');
+                    option.value = `Form ${i}`;
+                    option.textContent = `Form ${i}`;
+                    classSelect.appendChild(option);
+                }
+            } else if (educationLevel === 'A_LEVEL') {
+                // Advanced Level: Form 5-6
+                for (let i = 5; i <= 6; i++) {
+                    const option = document.createElement('option');
+                    option.value = `Form ${i}`;
+                    option.textContent = `Form ${i}`;
+                    classSelect.appendChild(option);
+                }
             }
         }
 

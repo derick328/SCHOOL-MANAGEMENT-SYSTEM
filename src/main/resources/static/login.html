@@ -76,7 +76,12 @@
                     
                     if (userResponse.success) {
                         const user = userResponse.data;
-                        const role = user.role.toLowerCase();
+                        let role = user.role.toLowerCase();
+                        
+                        // Map teacher subtypes to teacher dashboard
+                        if (role === 'academic_teacher' || role === 'discipline_teacher') {
+                            role = 'teacher';
+                        }
                         
                         // Redirect based on role
                         window.location.href = `/${role}-dashboard.html`;
