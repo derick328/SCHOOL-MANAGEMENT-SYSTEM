@@ -116,9 +116,12 @@ public class SecurityConfig {
                                                                 "/favicon.ico")
                                                 .permitAll()
 
-                                                // Admin API endpoints - Full access for viewing teachers (for subjects page)
-                                                .requestMatchers("/api/admin/teachers").hasAnyRole("ADMIN", "PRINCIPAL", "TEACHER", "ACADEMIC_TEACHER", "DISCIPLINE_TEACHER")
-                                                
+                                                // Admin API endpoints - Full access for viewing teachers (for subjects
+                                                // page)
+                                                .requestMatchers("/api/admin/teachers")
+                                                .hasAnyRole("ADMIN", "PRINCIPAL", "TEACHER", "ACADEMIC_TEACHER",
+                                                                "DISCIPLINE_TEACHER")
+
                                                 // Other Admin API endpoints - Admin and Principal only
                                                 .requestMatchers("/api/admin/**").hasAnyRole("ADMIN", "PRINCIPAL")
 
