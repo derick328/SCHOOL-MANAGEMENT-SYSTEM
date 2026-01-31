@@ -33,7 +33,8 @@ public class StudentResultService {
         log.info("Creating result for student id: {}, subject: {}", request.getStudentId(), request.getSubject());
 
         Student student = studentRepository.findById(request.getStudentId())
-                .orElseThrow(() -> new ResourceNotFoundException("Student not found with id: " + request.getStudentId()));
+                .orElseThrow(
+                        () -> new ResourceNotFoundException("Student not found with id: " + request.getStudentId()));
 
         StudentResult result = StudentResult.builder()
                 .student(student)
@@ -61,7 +62,8 @@ public class StudentResultService {
                 .orElseThrow(() -> new ResourceNotFoundException("Result not found with id: " + id));
 
         Student student = studentRepository.findById(request.getStudentId())
-                .orElseThrow(() -> new ResourceNotFoundException("Student not found with id: " + request.getStudentId()));
+                .orElseThrow(
+                        () -> new ResourceNotFoundException("Student not found with id: " + request.getStudentId()));
 
         result.setStudent(student);
         result.setSubject(request.getSubject());
