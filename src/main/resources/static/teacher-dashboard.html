@@ -34,6 +34,9 @@
                 <a href="#" class="menu-item" onclick="showSection('schedule')">
                     <span>📅</span> Schedule
                 </a>
+                <a href="#" class="menu-item" onclick="showSection('subjects')">
+                    <span>📚</span> Subjects
+                </a>
                 <a href="#" class="menu-item" onclick="showSection('assignments')">
                     <span>📄</span> Assignments
                 </a>
@@ -320,6 +323,24 @@
                         <p style="color: var(--secondary); padding: 20px;">Assignments module coming soon...</p>
                     </div>
                 </div>
+
+                <!-- Subjects Section -->
+                <div id="subjectsSection" style="display: none;">
+                    <div class="table-container">
+                        <div class="table-header">
+                            <h3>Subjects & Teachers</h3>
+                            <div style="display: flex; gap: 10px;">
+                                <input type="text" id="subjectSearch" placeholder="Search subjects..." style="padding: 8px; border: 2px solid var(--border); border-radius: 8px;">
+                                <button class="btn btn-primary btn-sm" onclick="loadSubjects()">Search</button>
+                            </div>
+                        </div>
+                        <div id="subjectsContainer" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; padding: 20px;">
+                            <div style="grid-column: 1/-1; text-align: center; padding: 40px; color: var(--secondary);">
+                                Loading subjects...
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </main>
     </div>
@@ -357,6 +378,7 @@
                 attendance: 'Mark Attendance',
                 grades: 'Grades & Marks',
                 schedule: 'Weekly Schedule',
+                subjects: 'Subjects & Teachers',
                 assignments: 'Assignments'
             };
             document.getElementById('pageTitle').textContent = titles[section];
@@ -366,6 +388,8 @@
                 loadStudents();
             } else if (section === 'schedule') {
                 loadTimetable();
+            } else if (section === 'subjects') {
+                loadSubjects();
             }
         }
 
@@ -636,6 +660,115 @@
 
         function createAssignment() {
             UI.showAlert('Assignment creation will be implemented with backend API', 'info');
+        }
+
+        // ============ SUBJECTS SECTION ============
+        async function loadSubjects() {
+            const searchTerm = document.getElementById('subjectSearch').value;
+            const container = document.getElementById('subjectsContainer');
+            
+            container.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 20px;">Loading subjects...</div>';
+
+            try {
+                // Fetch all teachers
+                const response = await API.request('/teacher/students');
+                
+                if (!response.success || !response.data) {
+                    container.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 40px; color: var(--secondary);">No data available</div>';
+                    return;
+                }
+
+                // Extract unique subjects from teachers
+                const subjectsMap = new Map();
+                
+                // For now, we'll use the teacher data we have
+                // In a real scenario, you'd have a dedicated endpoint to fetch teachers with subjects
+                const teachersResponse = await fetch(`${API.BASE_URL}/admin/teachers`, {
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (teachersResponse.ok) {
+                    const teachersData = await teachersResponse.json();
+                    const teachers = teachersData.data || [];
+                    
+                    // Group teachers by subject
+                    teachers.forEach(teacher => {
+                        if (teacher.subjects) {
+                            const subjects = teacher.subjects.split(',').map(s => s.trim());
+                            subjects.forEach(subject => {
+                                if (subject && (!searchTerm || subject.toLowerCase().includes(searchTerm.toLowerCase()))) {
+                                    if (!subjectsMap.has(subject)) {
+                                        subjectsMap.set(subject, []);
+                                    }
+                                    subjectsMap.get(subject).push(teacher);
+                                }
+                            });
+                        }
+                    });
+
+                    if (subjectsMap.size === 0) {
+                        container.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 40px; color: var(--secondary);">No subjects found</div>';
+                        return;
+                    }
+
+                    // Sort subjects alphabetically
+                    const sortedSubjects = Array.from(subjectsMap.keys()).sort();
+                    
+                    // Display subjects with teachers
+                    container.innerHTML = sortedSubjects.map(subject => {
+                        const teachers = subjectsMap.get(subject);
+                        return `
+                            <div class="card" style="padding: 20px; background: white; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                                <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 15px;">
+                                    <div style="background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%); 
+                                                width: 48px; height: 48px; border-radius: 12px; display: flex; 
+                                                align-items: center; justify-content: center; font-size: 24px;">
+                                        📚
+                                    </div>
+                                    <div>
+                                        <h3 style="margin: 0; font-size: 18px; color: var(--text);">${subject}</h3>
+                                        <p style="margin: 0; font-size: 13px; color: var(--secondary);">
+                                            ${teachers.length} teacher${teachers.length !== 1 ? 's' : ''}
+                                        </p>
+                                    </div>
+                                </div>
+                                <div style="border-top: 1px solid var(--border); padding-top: 15px;">
+                                    ${teachers.map(teacher => `
+                                        <div style="display: flex; align-items: center; gap: 10px; padding: 10px; 
+                                                    background: var(--background); border-radius: 8px; margin-bottom: 8px;">
+                                            <div style="width: 36px; height: 36px; border-radius: 50%; 
+                                                        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
+                                                        display: flex; align-items: center; justify-content: center; 
+                                                        color: white; font-weight: 600; font-size: 14px;">
+                                                ${teacher.firstName?.charAt(0) || 'T'}${teacher.lastName?.charAt(0) || ''}
+                                            </div>
+                                            <div style="flex: 1;">
+                                                <div style="font-weight: 600; font-size: 14px; color: var(--text);">
+                                                    ${teacher.firstName || ''} ${teacher.lastName || ''}
+                                                </div>
+                                                <div style="font-size: 12px; color: var(--secondary);">
+                                                    ${teacher.email || 'No email'}
+                                                </div>
+                                            </div>
+                                            <span class="badge badge-primary" style="font-size: 11px;">
+                                                ${teacher.experienceYears || 0} yrs
+                                            </span>
+                                        </div>
+                                    `).join('')}
+                                </div>
+                            </div>
+                        `;
+                    }).join('');
+                } else {
+                    container.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 40px; color: var(--danger);">Error loading teachers data</div>';
+                }
+            } catch (error) {
+                console.error('Error loading subjects:', error);
+                container.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 40px; color: var(--danger);">Error loading subjects</div>';
+            }
         }
     </script>
     <style>
