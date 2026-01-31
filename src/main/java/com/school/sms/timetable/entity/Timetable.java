@@ -74,10 +74,10 @@ public class Timetable extends BaseEntity {
         if (!this.dayOfWeek.equals(other.getDayOfWeek())) {
             return false;
         }
-        
+
         // Check time overlap: slots overlap if one starts before the other ends
-        return this.startTime.isBefore(other.getEndTime()) && 
-               this.endTime.isAfter(other.getStartTime());
+        return this.startTime.isBefore(other.getEndTime()) &&
+                this.endTime.isAfter(other.getStartTime());
     }
 
     /**

@@ -25,9 +25,9 @@ public interface TimetableRepository extends JpaRepository<Timetable, Long> {
     List<Timetable> findByDayOfWeekAndIsActiveTrue(DayOfWeek dayOfWeek);
 
     @Query("SELECT t FROM Timetable t WHERE t.teacher.id = :teacherId " +
-           "AND t.dayOfWeek = :dayOfWeek " +
-           "AND t.isActive = true " +
-           "AND ((t.startTime < :endTime AND t.endTime > :startTime))")
+            "AND t.dayOfWeek = :dayOfWeek " +
+            "AND t.isActive = true " +
+            "AND ((t.startTime < :endTime AND t.endTime > :startTime))")
     List<Timetable> findTeacherConflicts(
             @Param("teacherId") Long teacherId,
             @Param("dayOfWeek") DayOfWeek dayOfWeek,
@@ -35,10 +35,10 @@ public interface TimetableRepository extends JpaRepository<Timetable, Long> {
             @Param("endTime") LocalTime endTime);
 
     @Query("SELECT t FROM Timetable t WHERE t.className = :className " +
-           "AND (:section IS NULL OR t.section = :section) " +
-           "AND t.dayOfWeek = :dayOfWeek " +
-           "AND t.isActive = true " +
-           "AND ((t.startTime < :endTime AND t.endTime > :startTime))")
+            "AND (:section IS NULL OR t.section = :section) " +
+            "AND t.dayOfWeek = :dayOfWeek " +
+            "AND t.isActive = true " +
+            "AND ((t.startTime < :endTime AND t.endTime > :startTime))")
     List<Timetable> findClassConflicts(
             @Param("className") String className,
             @Param("section") String section,
@@ -47,9 +47,9 @@ public interface TimetableRepository extends JpaRepository<Timetable, Long> {
             @Param("endTime") LocalTime endTime);
 
     @Query("SELECT t FROM Timetable t WHERE t.room = :room " +
-           "AND t.dayOfWeek = :dayOfWeek " +
-           "AND t.isActive = true " +
-           "AND ((t.startTime < :endTime AND t.endTime > :startTime))")
+            "AND t.dayOfWeek = :dayOfWeek " +
+            "AND t.isActive = true " +
+            "AND ((t.startTime < :endTime AND t.endTime > :startTime))")
     List<Timetable> findRoomConflicts(
             @Param("room") String room,
             @Param("dayOfWeek") DayOfWeek dayOfWeek,

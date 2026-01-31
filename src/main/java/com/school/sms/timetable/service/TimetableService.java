@@ -36,7 +36,8 @@ public class TimetableService {
 
         // Validate teacher exists
         Teacher teacher = teacherRepository.findById(request.getTeacherId())
-                .orElseThrow(() -> new ResourceNotFoundException("Teacher not found with id: " + request.getTeacherId()));
+                .orElseThrow(
+                        () -> new ResourceNotFoundException("Teacher not found with id: " + request.getTeacherId()));
 
         // Check for conflicts
         ConflictCheckResponse conflictCheck = checkConflicts(request, null);
@@ -72,7 +73,8 @@ public class TimetableService {
                 .orElseThrow(() -> new ResourceNotFoundException("Timetable not found with id: " + id));
 
         Teacher teacher = teacherRepository.findById(request.getTeacherId())
-                .orElseThrow(() -> new ResourceNotFoundException("Teacher not found with id: " + request.getTeacherId()));
+                .orElseThrow(
+                        () -> new ResourceNotFoundException("Teacher not found with id: " + request.getTeacherId()));
 
         // Check for conflicts (excluding current timetable)
         ConflictCheckResponse conflictCheck = checkConflicts(request, id);
@@ -170,8 +172,7 @@ public class TimetableService {
                 request.getTeacherId(),
                 request.getDayOfWeek(),
                 request.getStartTime(),
-                request.getEndTime()
-        );
+                request.getEndTime());
 
         // Exclude current timetable if updating
         if (excludeTimetableId != null) {
@@ -195,8 +196,7 @@ public class TimetableService {
                 request.getSection(),
                 request.getDayOfWeek(),
                 request.getStartTime(),
-                request.getEndTime()
-        );
+                request.getEndTime());
 
         if (excludeTimetableId != null) {
             classConflicts = classConflicts.stream()
@@ -219,8 +219,7 @@ public class TimetableService {
                     request.getRoom(),
                     request.getDayOfWeek(),
                     request.getStartTime(),
-                    request.getEndTime()
-            );
+                    request.getEndTime());
 
             if (excludeTimetableId != null) {
                 roomConflicts = roomConflicts.stream()
