@@ -209,7 +209,7 @@ PARENT      → Child's academic information
 - [ ] Dashboard (role-based views)
 - [ ] Timetable Management
 - [ ] Report Card Generation (PDF)
-
+-[] Upload school timetable
 ## 📝 Development Guidelines
 
 ### Code Style

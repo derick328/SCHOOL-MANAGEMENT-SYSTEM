@@ -124,6 +124,16 @@ public class SecurityConfig {
                                                 .hasAnyRole("ADMIN", "PRINCIPAL", "TEACHER", "ACADEMIC_TEACHER",
                                                                 "DISCIPLINE_TEACHER")
 
+                                                // Timetable API endpoints - Admin, Principal, and Academic Teachers
+                                                .requestMatchers("/api/timetable/**")
+                                                .hasAnyRole("ADMIN", "PRINCIPAL", "TEACHER", "ACADEMIC_TEACHER",
+                                                                "DISCIPLINE_TEACHER")
+
+                                                // Results API endpoints - Admin, Principal, and Teachers
+                                                .requestMatchers("/api/results/**")
+                                                .hasAnyRole("ADMIN", "PRINCIPAL", "TEACHER", "ACADEMIC_TEACHER",
+                                                                "DISCIPLINE_TEACHER")
+
                                                 // Student API endpoints
                                                 .requestMatchers("/api/student/**")
                                                 .hasAnyRole("ADMIN", "PRINCIPAL", "TEACHER", "ACADEMIC_TEACHER",

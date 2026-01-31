@@ -161,22 +161,29 @@
                     <div class="table-container">
                         <div class="table-header">
                             <h3>My Students</h3>
+                            <div style="display: flex; gap: 10px;">
+                                <input type="text" id="studentSearch" placeholder="Search students..." style="padding: 8px; border: 2px solid var(--border); border-radius: 8px;">
+                                <select id="classFilter" style="padding: 8px; border: 2px solid var(--border); border-radius: 8px;">
+                                    <option value="">All Classes</option>
+                                </select>
+                                <button class="btn btn-primary btn-sm" onclick="loadStudents()">Search</button>
+                            </div>
                         </div>
                         <table>
                             <thead>
                                 <tr>
-                                    <th>Roll No</th>
+                                    <th>Admission No</th>
                                     <th>Name</th>
                                     <th>Class</th>
-                                    <th>Attendance</th>
-                                    <th>Grade</th>
+                                    <th>Section</th>
+                                    <th>Status</th>
                                     <th>Actions</th>
                                 </tr>
                             </thead>
-                            <tbody>
+                            <tbody id="studentsTableBody">
                                 <tr>
                                     <td colspan="6" style="text-align: center; padding: 40px; color: var(--secondary);">
-                                        No students to display
+                                        Loading students...
                                     </td>
                                 </tr>
                             </tbody>
@@ -214,9 +221,90 @@
                 <div id="scheduleSection" style="display: none;">
                     <div class="table-container">
                         <div class="table-header">
-                            <h3>Weekly Schedule</h3>
+                            <h3>Weekly Timetable</h3>
+                            <button class="btn btn-primary btn-sm" onclick="showCreateTimetableForm()" id="createTimetableBtn">
+                                + Create Timetable
+                            </button>
                         </div>
-                        <p style="color: var(--secondary); padding: 20px;">Schedule module coming soon...</p>
+                        
+                        <!-- Create Timetable Form -->
+                        <div id="timetableForm" style="display: none; background: var(--bg-secondary); padding: 20px; border-radius: 12px; margin-bottom: 20px;">
+                            <h4 style="margin-bottom: 15px;">Create New Timetable Entry</h4>
+                            <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px;">
+                                <div>
+                                    <label>Class Name *</label>
+                                    <input type="text" id="ttClassName" class="form-input" placeholder="e.g., Grade 10" required>
+                                </div>
+                                <div>
+                                    <label>Section</label>
+                                    <input type="text" id="ttSection" class="form-input" placeholder="e.g., A">
+                                </div>
+                                <div>
+                                    <label>Subject *</label>
+                                    <input type="text" id="ttSubject" class="form-input" placeholder="e.g., Mathematics" required>
+                                </div>
+                                <div>
+                                    <label>Teacher ID *</label>
+                                    <input type="number" id="ttTeacherId" class="form-input" placeholder="Teacher ID" required>
+                                </div>
+                                <div>
+                                    <label>Day of Week *</label>
+                                    <select id="ttDayOfWeek" class="form-input" required>
+                                        <option value="">Select Day</option>
+                                        <option value="MONDAY">Monday</option>
+                                        <option value="TUESDAY">Tuesday</option>
+                                        <option value="WEDNESDAY">Wednesday</option>
+                                        <option value="THURSDAY">Thursday</option>
+                                        <option value="FRIDAY">Friday</option>
+                                        <option value="SATURDAY">Saturday</option>
+                                        <option value="SUNDAY">Sunday</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label>Room</label>
+                                    <input type="text" id="ttRoom" class="form-input" placeholder="e.g., Room 101">
+                                </div>
+                                <div>
+                                    <label>Start Time *</label>
+                                    <input type="time" id="ttStartTime" class="form-input" required>
+                                </div>
+                                <div>
+                                    <label>End Time *</label>
+                                    <input type="time" id="ttEndTime" class="form-input" required>
+                                </div>
+                            </div>
+                            <div style="margin-top: 15px;">
+                                <label>Notes</label>
+                                <textarea id="ttNotes" class="form-input" rows="2" placeholder="Additional notes"></textarea>
+                            </div>
+                            <div id="conflictAlert" style="display: none; margin-top: 15px; padding: 15px; background: #fee; border: 1px solid #fcc; border-radius: 8px; color: #c00;">
+                            </div>
+                            <div style="margin-top: 15px; display: flex; gap: 10px;">
+                                <button class="btn btn-primary" onclick="checkAndSaveTimetable()">Check Conflicts & Save</button>
+                                <button class="btn btn-secondary" onclick="hideCreateTimetableForm()">Cancel</button>
+                            </div>
+                        </div>
+
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Day</th>
+                                    <th>Time</th>
+                                    <th>Class</th>
+                                    <th>Subject</th>
+                                    <th>Teacher</th>
+                                    <th>Room</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="timetableTableBody">
+                                <tr>
+                                    <td colspan="7" style="text-align: center; padding: 40px; color: var(--secondary);">
+                                        Loading timetable...
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
                     </div>
                 </div>
 
@@ -238,7 +326,23 @@
 
     <script src="/js/app.js"></script>
     <script>
-        initDashboard();
+        let currentUser = null;
+        let allStudents = [];
+        let allTimetables = [];
+
+        async function init() {
+            await initDashboard();
+            currentUser = Auth.getUser();
+            
+            // Check if user is academic teacher and show/hide create button
+            if (currentUser && (currentUser.role === 'ACADEMIC_TEACHER' || currentUser.role === 'ADMIN' || currentUser.role === 'PRINCIPAL')) {
+                document.getElementById('createTimetableBtn').style.display = 'block';
+            } else {
+                document.getElementById('createTimetableBtn').style.display = 'none';
+            }
+        }
+
+        init();
 
         function showSection(section) {
             document.querySelectorAll('[id$="Section"]').forEach(el => el.style.display = 'none');
@@ -256,6 +360,274 @@
                 assignments: 'Assignments'
             };
             document.getElementById('pageTitle').textContent = titles[section];
+
+            // Load data when switching sections
+            if (section === 'students') {
+                loadStudents();
+            } else if (section === 'schedule') {
+                loadTimetable();
+            }
+        }
+
+        // ============ STUDENTS SECTION ============
+        async function loadStudents() {
+            const searchTerm = document.getElementById('studentSearch').value;
+            const classFilter = document.getElementById('classFilter').value;
+            const tbody = document.getElementById('studentsTableBody');
+            
+            tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 20px;">Loading...</td></tr>';
+
+            try {
+                let url = '/teacher/students?';
+                if (searchTerm) url += `search=${encodeURIComponent(searchTerm)}&`;
+                if (classFilter) url += `className=${encodeURIComponent(classFilter)}`;
+
+                const response = await API.request(url);
+                
+                if (response.success && response.data) {
+                    allStudents = response.data;
+                    displayStudents(allStudents);
+                } else {
+                    tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 20px;">No students found</td></tr>';
+                }
+            } catch (error) {
+                console.error('Error loading students:', error);
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 20px; color: var(--danger);">Error loading students</td></tr>';
+            }
+        }
+
+        function displayStudents(students) {
+            const tbody = document.getElementById('studentsTableBody');
+            
+            if (!students || students.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 20px;">No students found</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = students.map(student => `
+                <tr>
+                    <td>${student.admissionNumber || 'N/A'}</td>
+                    <td>${student.firstName} ${student.lastName}</td>
+                    <td>${student.currentClass || 'N/A'}</td>
+                    <td>${student.section || 'N/A'}</td>
+                    <td><span class="badge badge-${student.status === 'ACTIVE' ? 'success' : 'secondary'}">${student.status}</span></td>
+                    <td>
+                        <button class="btn btn-sm btn-primary" onclick="viewStudentResults(${student.id})">View Results</button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        async function viewStudentResults(studentId) {
+            try {
+                const response = await API.request(`/results/student/${studentId}`);
+                
+                if (response.success && response.data) {
+                    const results = response.data;
+                    const student = allStudents.find(s => s.id === studentId);
+                    
+                    if (results.length === 0) {
+                        alert(`No results found for ${student.firstName} ${student.lastName}`);
+                        return;
+                    }
+
+                    // Create results modal/display
+                    let resultsHTML = `
+                        <div style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 1000;" onclick="this.remove()">
+                            <div style="background: white; padding: 30px; border-radius: 12px; max-width: 800px; max-height: 80vh; overflow-y: auto;" onclick="event.stopPropagation()">
+                                <h3>${student.firstName} ${student.lastName} - Academic Results</h3>
+                                <p style="color: var(--secondary);">Admission No: ${student.admissionNumber}</p>
+                                <table style="width: 100%; margin-top: 20px;">
+                                    <thead>
+                                        <tr>
+                                            <th>Subject</th>
+                                            <th>Exam Type</th>
+                                            <th>Year/Term</th>
+                                            <th>Marks</th>
+                                            <th>Grade</th>
+                                            <th>%</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        ${results.map(r => `
+                                            <tr>
+                                                <td>${r.subject}</td>
+                                                <td>${r.examType}</td>
+                                                <td>${r.academicYear} ${r.term ? '- ' + r.term : ''}</td>
+                                                <td>${r.marksObtained}/${r.totalMarks}</td>
+                                                <td><span class="badge badge-primary">${r.grade}</span></td>
+                                                <td>${r.percentage.toFixed(1)}%</td>
+                                            </tr>
+                                        `).join('')}
+                                    </tbody>
+                                </table>
+                                <button class="btn btn-secondary" style="margin-top: 20px;" onclick="this.closest('div[style*=fixed]').remove()">Close</button>
+                            </div>
+                        </div>
+                    `;
+                    
+                    document.body.insertAdjacentHTML('beforeend', resultsHTML);
+                }
+            } catch (error) {
+                console.error('Error loading results:', error);
+                alert('Error loading student results');
+            }
+        }
+
+        // ============ TIMETABLE SECTION ============
+        async function loadTimetable() {
+            const tbody = document.getElementById('timetableTableBody');
+            tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 20px;">Loading...</td></tr>';
+
+            try {
+                const response = await API.request('/timetable');
+                
+                if (response.success && response.data) {
+                    allTimetables = response.data;
+                    displayTimetable(allTimetables);
+                } else {
+                    tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 20px;">No timetable entries found</td></tr>';
+                }
+            } catch (error) {
+                console.error('Error loading timetable:', error);
+                tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 20px; color: var(--danger);">Error loading timetable</td></tr>';
+            }
+        }
+
+        function displayTimetable(timetables) {
+            const tbody = document.getElementById('timetableTableBody');
+            
+            if (!timetables || timetables.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 20px;">No timetable entries</td></tr>';
+                return;
+            }
+
+            // Sort by day and time
+            const dayOrder = ['MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY', 'SUNDAY'];
+            timetables.sort((a, b) => {
+                const dayDiff = dayOrder.indexOf(a.dayOfWeek) - dayOrder.indexOf(b.dayOfWeek);
+                if (dayDiff !== 0) return dayDiff;
+                return a.startTime.localeCompare(b.startTime);
+            });
+
+            tbody.innerHTML = timetables.map(tt => `
+                <tr>
+                    <td>${tt.dayOfWeek}</td>
+                    <td>${tt.startTime} - ${tt.endTime}</td>
+                    <td>${tt.className}${tt.section ? ' - ' + tt.section : ''}</td>
+                    <td>${tt.subject}</td>
+                    <td>${tt.teacherName}</td>
+                    <td>${tt.room || 'N/A'}</td>
+                    <td>
+                        ${currentUser && (currentUser.role === 'ACADEMIC_TEACHER' || currentUser.role === 'ADMIN' || currentUser.role === 'PRINCIPAL') ? 
+                            `<button class="btn btn-sm btn-danger" onclick="deleteTimetable(${tt.id})">Delete</button>` : 
+                            'View Only'}
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function showCreateTimetableForm() {
+            document.getElementById('timetableForm').style.display = 'block';
+            document.getElementById('conflictAlert').style.display = 'none';
+        }
+
+        function hideCreateTimetableForm() {
+            document.getElementById('timetableForm').style.display = 'none';
+            document.getElementById('ttClassName').value = '';
+            document.getElementById('ttSection').value = '';
+            document.getElementById('ttSubject').value = '';
+            document.getElementById('ttTeacherId').value = '';
+            document.getElementById('ttDayOfWeek').value = '';
+            document.getElementById('ttRoom').value = '';
+            document.getElementById('ttStartTime').value = '';
+            document.getElementById('ttEndTime').value = '';
+            document.getElementById('ttNotes').value = '';
+            document.getElementById('conflictAlert').style.display = 'none';
+        }
+
+        async function checkAndSaveTimetable() {
+            const request = {
+                className: document.getElementById('ttClassName').value,
+                section: document.getElementById('ttSection').value || null,
+                subject: document.getElementById('ttSubject').value,
+                teacherId: parseInt(document.getElementById('ttTeacherId').value),
+                dayOfWeek: document.getElementById('ttDayOfWeek').value,
+                startTime: document.getElementById('ttStartTime').value,
+                endTime: document.getElementById('ttEndTime').value,
+                room: document.getElementById('ttRoom').value || null,
+                notes: document.getElementById('ttNotes').value || null,
+                isActive: true
+            };
+
+            // Validate required fields
+            if (!request.className || !request.subject || !request.teacherId || !request.dayOfWeek || !request.startTime || !request.endTime) {
+                alert('Please fill in all required fields');
+                return;
+            }
+
+            try {
+                // Check for conflicts
+                const conflictResponse = await API.request('/timetable/check-conflicts', {
+                    method: 'POST',
+                    body: JSON.stringify(request)
+                });
+
+                if (conflictResponse.success && conflictResponse.data) {
+                    const conflictData = conflictResponse.data;
+                    
+                    if (conflictData.hasConflict) {
+                        // Show conflicts
+                        const conflictAlert = document.getElementById('conflictAlert');
+                        conflictAlert.style.display = 'block';
+                        conflictAlert.innerHTML = `
+                            <strong>⚠️ Conflicts Detected:</strong><br>
+                            ${conflictData.conflicts.map(c => `• ${c.type}: ${c.description}`).join('<br>')}
+                            <br><br>Please adjust the schedule to resolve conflicts.
+                        `;
+                        return;
+                    }
+                }
+
+                // No conflicts, save timetable
+                const response = await API.request('/timetable', {
+                    method: 'POST',
+                    body: JSON.stringify(request)
+                });
+
+                if (response.success) {
+                    UI.showAlert('Timetable created successfully!', 'success');
+                    hideCreateTimetableForm();
+                    loadTimetable();
+                } else {
+                    alert('Error creating timetable: ' + response.message);
+                }
+            } catch (error) {
+                console.error('Error creating timetable:', error);
+                alert('Error creating timetable: ' + error.message);
+            }
+        }
+
+        async function deleteTimetable(id) {
+            if (!confirm('Are you sure you want to delete this timetable entry?')) {
+                return;
+            }
+
+            try {
+                const response = await API.request(`/timetable/${id}`, {
+                    method: 'DELETE'
+                });
+
+                if (response.success) {
+                    UI.showAlert('Timetable deleted successfully', 'success');
+                    loadTimetable();
+                } else {
+                    alert('Error deleting timetable');
+                }
+            } catch (error) {
+                console.error('Error deleting timetable:', error);
+                alert('Error deleting timetable');
+            }
         }
 
         function loadAttendance() {
@@ -266,5 +638,32 @@
             UI.showAlert('Assignment creation will be implemented with backend API', 'info');
         }
     </script>
+    <style>
+        .form-input {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            font-size: 14px;
+        }
+        .badge {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        .badge-success {
+            background: #d4edda;
+            color: #155724;
+        }
+        .badge-secondary {
+            background: #e2e3e5;
+            color: #383d41;
+        }
+        .badge-primary {
+            background: #cfe2ff;
+            color: #084298;
+        }
+    </style>
 </body>
 </html>
